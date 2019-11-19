@@ -2,18 +2,14 @@
 // Created by slahmer on 11/16/19.
 //
 
-#ifndef BLASTER_DEFS_H
-#define BLASTER_DEFS_H
+#ifndef BLASTER_SYMBOL_H
+#define BLASTER_SYMBOL_H
 
-#define IDLEN 50
 #include <uthash.h>
-enum {
-  VARIABLE,
-  FUNCTON,
-  PARAMETER,
+#include <defs.h>
 
-};
 typedef struct __symbol__ symbol;
+typedef symbol* symbol_p;
 typedef struct __symbol_entry_variable__ se_var;
 
 struct __symbol__ {
@@ -35,5 +31,12 @@ struct __symbol__entry_parameter__{
 
 };
 
+symbol_p users = NULL;
 
-#endif //BLASTER_DEFS_H
+int add_symbol_entry(symbol_p);
+symbol_p lookup_symbol_entry(const char*);
+
+
+
+
+#endif //BLASTER_SYMBOL_H
