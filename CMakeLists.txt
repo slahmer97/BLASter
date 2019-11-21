@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.0)
 
 project(blaster C)
 
@@ -10,17 +10,17 @@ enable_testing()
 
 include_directories(src/headers)
 include_directories(src/uthash-master/src)
-
 set( BLAST_SRC
-        src/main.c
         src/symbol.c
-)
+        src/lex.yy.c
+        src/y.tab.c
+        )
 set(
         TEST_SRC
         test/test1.c
 )
-add_executable(blaster ${BLAST_SRC})
-target_compile_options(blaster PRIVATE -Werror -Wall -Wextra)
+add_executable(blaster src/main.c ${BLAST_SRC})
+target_compile_options(blaster PRIVATE  -Wall -O2)
 
 #TODO add testing exec
 

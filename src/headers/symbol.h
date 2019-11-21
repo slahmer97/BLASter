@@ -4,13 +4,13 @@
 
 #ifndef BLASTER_SYMBOL_H
 #define BLASTER_SYMBOL_H
+#define IDLEN 50
 
 #include <uthash.h>
-#include <defs.h>
 
 typedef struct __symbol__ symbol;
 typedef symbol* symbol_p;
-typedef struct __symbol_entry_variable__ se_var;
+
 
 struct __symbol__ {
     char name[IDLEN];
@@ -18,20 +18,13 @@ struct __symbol__ {
         //TODO
     };
 
+    short is_dec : 1; // check if this entry (var,pointer,function,...) was declared
+    short is_init : 1; // check if this entry (var,pointer,... ) was initialized
+
     UT_hash_handle hh; /* makes this structure hashable */
 };
 
-struct __symbol_entry_variable__{
-
-};
-struct __symbol_entry_function__{
-
-};
-struct __symbol__entry_parameter__{
-
-};
-
-symbol_p users = NULL;
+//symbol_p users = NULL;
 
 int add_symbol_entry(symbol_p);
 symbol_p lookup_symbol_entry(const char*);

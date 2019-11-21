@@ -1,9 +1,8 @@
 #include <stdio.h>
-
-
+#include <defs.h>
+extern int line_counter;
 int main() {
-
-
-    printf("Hello, World!\n");
-    return 0;
+    line_counter = 0;
+    //return yylex();
+    return yyparse();
 }
