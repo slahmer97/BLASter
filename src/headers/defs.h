@@ -5,7 +5,7 @@
 #ifndef BLASTER_DEFS_H
 #define BLASTER_DEFS_H
 
-
+#include <symbol.h>
 
 
 

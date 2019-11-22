@@ -7,9 +7,9 @@
 
 %token FOR WHILE DO IF ELSE RETURN
 %token INT VOID FLOAT
-%token CONST STRING
+%token CONST_Q //type qualifier  const int...
+%token CONST STRING IDENTIFIER //const = 10 ...etc
 %token '='
-%token IDENTIFIER
 %token '(' ')' ';' '}' '{' ']' '['
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
 
@@ -29,10 +29,9 @@ declaration
 declaration_specifiers
 	:
 	type_specifier
-	| type_specifier declaration_specifiers
+	| type_specifier declaration_specifiers // int ..
+	| type_qualifier declaration_specifiers //const int ...
 	;
-//| type_qualifier
-//| type_qualifier declaration_specifiers
 //| storage_class_specifier
 //| storage_class_specifier declaration_specifiers
 //=======================================================USED
@@ -49,10 +48,8 @@ init_declarator_list
 
 init_declarator
 	: declarator
+	| declarator '=' initializer
 	;
-//| declarator '=' initializer
-
-
 
 declarator
 	: pointer direct_declarator
@@ -80,9 +77,26 @@ type_qualifier_list
 	| type_qualifier_list type_qualifier
 	;
 type_qualifier
-	: CONST
+	: CONST_Q
 	;
 
+
+initializer
+	:primary_expression
+	//: assignment_expression TODO change later
+	| '{' initializer_list '}'
+	//| '{' initializer_list ',' '}'
+	;
+initializer_list
+	: initializer
+	| initializer_list ',' initializer
+	;
+primary_expression
+	: IDENTIFIER
+	| CONST
+	| STRING
+	//| '(' expression ')'
+	;
 
 
 
@@ -92,7 +106,7 @@ type_qualifier
 
 int yyerror(const char *str)
 {
-	printf("error : %s\n",str);
+	printf("error : %s\tline : %d\n",str,line_counter);
 	return -1;
 }
 

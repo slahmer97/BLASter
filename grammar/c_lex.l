@@ -49,6 +49,11 @@ IS			(u|U|l|L)*
     return(RETURN);
 }
 
+"const" {
+    printf("CONST_Q ");
+    return (CONST_Q);
+}
+
 "void" {
     return(VOID);
 }
@@ -124,19 +129,22 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 ";" {
-    printf("END_INSRT ");
+    printf("END_INSRT\n");
     return(';');
 }
 
 ("{"|"<%") {
+    printf("{ ");
     return('{');
 }
 
 ("}"|"%>") {
+    printf("} ");
     return('}');
 }
 
 "," {
+    printf(", ");
     return(',');
 }
 
