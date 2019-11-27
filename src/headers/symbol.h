@@ -7,8 +7,7 @@
 #define IDLEN 50
 
 #include <uthash.h>
-#define VAR_
-#define STATIC_ARRAY
+
 typedef struct __symbol__ symbol;
 typedef symbol* symbol_p;
 symbol_p tsymbol;
@@ -65,6 +64,12 @@ int add_symbol_entry(symbol_p);
 int lookup_symbol_entry(const char*,symbol_p* out);
 
 void display_symbol_table(void);
+
+/**
+ *
+ * @param symbolP
+ */
+void copy_name(symbol_p symbolP,const char*, unsigned int len);
 
 
 

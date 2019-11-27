@@ -6,9 +6,9 @@ FS			(f|F|l|L)
 IS			(u|U|l|L)*
 %{
 	#include<stdlib.h>
+	#include<string.h>
     #include "y.tab.h"
 	#include "defs.h"
-	//extern int yylval;
 
 	void comment(void);
 %}
@@ -64,15 +64,20 @@ IS			(u|U|l|L)*
 
 {L}({L}|{D})* {
     printf("ID ");
+    symbol id_s;
+    copy_name(&id_s,yytext,strlen(yytext));
+    int ret = add_symbol_entry(&id_s);
     return(IDENTIFIER);
 }
 
 0[xX]{H}+{IS}? {
+    //TODO Hex to int
     printf("CONST ");
     return(CONST);
 }
 
 0{D}+{IS}? {
+    //TODO unsigned long
     printf("CONST ");
     return(CONST);
 }
@@ -93,15 +98,19 @@ L?'(\\.|[^\\'])+' {
 }
 
 {D}*"."{D}+({E})?{FS}? {
+    printf("CONST ");
     return(CONST);
 }
 
 {D}+"."{D}*({E})?{FS}? {
+    //TODO float con = to_float(yytext);
+    //TODOyyval = con;
     printf("CONST ");
     return(CONST);
 }
 
 L?\"(\\.|[^\\"])*\"	{
+    printf("STRING ");
     return(STRING);
 }
 
@@ -184,6 +193,7 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 "*"	{
+    printf("PTR ");
     return('*');
 }
 
@@ -210,8 +220,8 @@ void comment(void)
 	char c, c1;
 
 loop:
-	while ((c = input()) != '*' && c != 0)
-		putchar(c);
+	while ((c = input()) != '*' && c != 0);
+		//putchar(c);
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
@@ -219,7 +229,7 @@ loop:
 		goto loop;
 	}
 
-	if (c != 0)
-		putchar(c1);
+	//if (c != 0)
+		//putchar(c1);
 
 }

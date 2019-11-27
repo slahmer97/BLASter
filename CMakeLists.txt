@@ -20,7 +20,7 @@ set(
         test/test1.c
 )
 add_executable(blaster src/main.c ${BLAST_SRC})
-target_compile_options(blaster PRIVATE  -Wall -Werror=format-security -Werror=implicit-function-declaration)
+target_compile_options(blaster PRIVATE  -Wall -Werror=implicit-function-declaration)
 
 #TODO add testing exec
 

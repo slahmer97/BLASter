@@ -4,6 +4,9 @@
 	#include<y.tab.h>
 
 %}
+%union{
+
+}
 
 %token FOR WHILE DO IF ELSE RETURN
 %token INT VOID FLOAT
@@ -59,6 +62,7 @@ declarator
 direct_declarator
 	: IDENTIFIER
         | direct_declarator '[' ']'
+        | direct_declarator '[' CONST ']' {}
         ;
 //| direct_declarator '[' constant_expression ']'
 //| '(' declarator ')'

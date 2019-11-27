@@ -3,7 +3,8 @@
 //
 
 #include <stdio.h>
-#include "headers/symbol.h"
+#include <symbol.h>
+
 
 static int hash_find_str(const char* name,symbol_p* out){
     symbol_p tmp;
@@ -36,6 +37,7 @@ int add_symbol_entry(symbol_p p){
 
 
 
+
 int lookup_symbol_entry(const char* name,symbol_p *out){
     hash_find_str(name,out);
     if(out == 0){
@@ -43,4 +45,18 @@ int lookup_symbol_entry(const char* name,symbol_p *out){
         return 0;
     }
     return 1;
+}
+
+void copy_name(symbol_p symbolP,const char* name, unsigned int len){
+    unsigned int min = (len < IDLEN) ?len:IDLEN;
+    for (unsigned int i = 0; i < min ; ++i)
+        symbolP->name[i] = name[i];
+}
+
+void display_symbol_table(void){
+    symbol_p s;
+
+    for(s=tsymbol; s != NULL; s=s->hh.next) {
+        printf("name %s\n", s->name);
+    }
 }
