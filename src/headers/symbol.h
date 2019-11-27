@@ -26,6 +26,13 @@ struct __symbol__ {
     UT_hash_handle hh; /* makes this structure hashable */
 };
 
+struct ptr_entry__{
+    int stat : 1;
+    unsigned int dimentions;
+    int * size; //10,2
+};
+
+
 
 /**
  *              Insertion symbol into tsymbol(helper function)
@@ -65,6 +72,7 @@ int lookup_symbol_entry(const char*,symbol_p* out);
 
 void display_symbol_table(void);
 
+void destroy_symbol_table(void);
 /**
  *
  * @param symbolP

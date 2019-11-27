@@ -21,6 +21,9 @@ static void hash_add_str(symbol_p p){
         exit(1);
     }
     memcpy(copy,p,sizeof(symbol));
+    copy->is_dec = 0;
+    copy->is_init = 0;
+    copy->type  = -1;
     HASH_ADD_STR(tsymbol,name,copy);
 }
 
@@ -49,6 +52,7 @@ int lookup_symbol_entry(const char* name,symbol_p *out){
 
 void copy_name(symbol_p symbolP,const char* name, unsigned int len){
     unsigned int min = (len < IDLEN) ?len:IDLEN;
+    memset(symbolP->name,0,IDLEN);
     for (unsigned int i = 0; i < min ; ++i)
         symbolP->name[i] = name[i];
 }
@@ -57,6 +61,15 @@ void display_symbol_table(void){
     symbol_p s;
 
     for(s=tsymbol; s != NULL; s=s->hh.next) {
-        printf("name %s\n", s->name);
+        printf("name :  %s -- is_dec : %d -- is_init : %d -- type : %d\n", s->name,s->is_dec,s->is_init,s->type);
+    }
+}
+
+void destroy_symbol_table(void){
+    symbol_p current_user, tmp;
+
+    HASH_ITER(hh, tsymbol, current_user, tmp) {
+        HASH_DEL(tsymbol,current_user);  /* delete; users advances to next */
+        free(current_user);            /* optional- if you want to free  */
     }
 }
