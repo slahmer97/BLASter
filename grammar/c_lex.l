@@ -78,7 +78,7 @@ IS			(u|U|l|L)*
 0[xX]{H}+{IS}? {
     //TODO Hex to int
     yylval.vv.string_val = strdup(yytext);
-    printf("CONST_HEX ");
+    printf("CONST ");
     return(CONST);
 }
 
@@ -86,7 +86,7 @@ IS			(u|U|l|L)*
     //TODO unsigned long
     yylval.vv.string_val = strdup(yytext);
     printf("CONST_UNSIGNED ");
-    return(CONST);
+    return(CONST_INT);
 }
 
 {D}+{IS}? {
@@ -94,7 +94,7 @@ IS			(u|U|l|L)*
     printf("CONST_D_INT_1 ");
     yylval.vv.string_val = strdup(yytext);
 
-    return(CONST);
+    return(CONST_INT);
 }
 
 L?'(\\.|[^\\'])+' {
@@ -113,7 +113,7 @@ L?'(\\.|[^\\'])+' {
 {D}*"."{D}+({E})?{FS}? {
     printf("CONST_D.D.FS ");
     yylval.vv.string_val = strdup(yytext);
-    return(CONST);
+    return(CONST_FLOAT);
 }
 
 {D}+"."{D}*({E})?{FS}? {
@@ -121,7 +121,7 @@ L?'(\\.|[^\\'])+' {
     //TODO yyval = con;
     yylval.vv.string_val = strdup(yytext);
     printf("CONST_D.D.E.FS ");
-    return(CONST);
+    return(CONST_FLOAT);
 }
 
 L?\"(\\.|[^\\"])*\"	{

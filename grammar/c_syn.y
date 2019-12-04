@@ -24,12 +24,11 @@
 %token FOR WHILE DO IF ELSE RETURN
 %token INT VOID FLOAT
 %token CONST_Q //type qualifier  const int...
-%token <vv> CONST IDENTIFIER
-%token STRING //const = 10 ...etc
+%token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST
 %token '='
 %token '(' ')' ';' '}' '{' ']' '['
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
-%type <vv> type_specifier declaration_specifiers
+%type <vv> type_specifier declaration_specifiers primary_expression
 %type <vv> pointer direct_declarator declarator init_declarator
 %start declaration_list
 %%
@@ -101,8 +100,9 @@ init_declarator
 		$$.count_m  = $1.count_m;
 	}
 	| declarator '=' initializer {
-		for(int l = 0;l<4;l++)
+		for(int l = 0;l<4;l++){
 			$$.t[l] = $1.t[l];
+		}
 		$$.sentry = $1.sentry;
 		$$.count_p  = $1.count_p; //TODO maybe 0
 		$$.count_m  = $1.count_m;
@@ -133,13 +133,14 @@ direct_declarator
 	: IDENTIFIER {
 		$$.count_p  = 0;
 		$$.count_m  = 0;
+		direct_declarator = 0;
 		$$.sentry = $1.sentry;
 	}
         //| direct_declarator '[' ']' {
         // 	$$.count_p = $1.count_p +1;
        // 	// TODO maybe add the array size
         //}
-        | direct_declarator '[' CONST ']' {
+        | direct_declarator '[' CONST_INT ']' {
          	//$$ = $1 +1;
         	$$.t[direct_declarator] = $3.val;
          	direct_declarator++;
@@ -171,18 +172,21 @@ initializer_list
 	| initializer_list ',' initializer
 	;
 primary_expression
-	: IDENTIFIER
-	| CONST
-	| STRING
+	: IDENTIFIER {
+
+	}
+	| CONST_INT {
+		$$.type = CONST_INT;
+
+	}
+	| CONST_FLOAT {
+		$$.type = CONST_FLOAT;
+	}
+	//| STRING {
+	//TODO Not implemented yet
+	//}
 	//| '(' expression ')'
 	;
-//type_qualifier_list
-//	: type_qualifier
-//	| type_qualifier_list type_qualifier
-//	;
-//type_qualifier
-//	: CONST_Q
-//	;
 
 
 
