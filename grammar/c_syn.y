@@ -3,23 +3,34 @@
 	#include<defs.h>
 	#include<y.tab.h>
 
+	int for_detector = 0;
+	int direct_declarator = 0;
 %}
 %union{
-	int type;
+	struct {
+		int count_p;
+		int count_m;
+		int type;
+		int size;
+		int val;
+		float fval;
+		void * sentry;
+		int t[4];
+		char* string_val;
+	}vv;
 
-
-	int count;
 }
 
 %token FOR WHILE DO IF ELSE RETURN
 %token INT VOID FLOAT
 %token CONST_Q //type qualifier  const int...
-%token CONST STRING IDENTIFIER //const = 10 ...etc
+%token <vv> CONST IDENTIFIER
+%token STRING //const = 10 ...etc
 %token '='
 %token '(' ')' ';' '}' '{' ']' '['
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
-%type <type> type_specifier declaration_specifiers
-%type <count> pointer direct_declarator
+%type <vv> type_specifier declaration_specifiers
+%type <vv> pointer direct_declarator declarator init_declarator
 %start declaration_list
 %%
 
@@ -38,8 +49,8 @@ declaration
 declaration_specifiers
 	:
 	type_specifier {
-	 $$ = $1;
-	 //TODO check composed types=====!
+		 $$.type = $1.type;
+		 //TODO check composed types=====!
 	}
 	//| type_specifier declaration_specifiers // int ..
 	//| type_qualifier declaration_specifiers //const int ...
@@ -49,71 +60,101 @@ declaration_specifiers
 //=======================================================USED
 type_specifier
 	: VOID {
-	$$ = VOID;
-	printf("TYPE : %d",$$);
-
+		$$.type = VOID;
+		//printf("TYPE : %d",$$);
 	}
 	| INT  {
-	$$ = INT;
-	printf("TYPE : %d",$$);
+		$$.type = INT;
+		//printf("TYPE : %d",$$);
 	}
 	| FLOAT {
-
-	$$ = FLOAT;
-	printf("TYPE : %d",$$);
+		$$.type = FLOAT;
+		//printf("TYPE : %d",$$);
 	}
 	;
 
 init_declarator_list
-	: init_declarator
+	: init_declarator {
+		symbol_p varp = (symbol_p) $1.sentry;
+		int countp = $1.count_p; //TODO maybe 0
+		int countm = $1.count_m;
+		if(countp > 0 || countm > 0){
+			varp->type = VAR_ARR;
+			varp->arr.dimention_m = countm;
+			varp->arr.dimention_p = countp;
+			for(int pp = 0;pp<4;pp++)
+				varp->arr.size[pp] = $1.t[pp];
+
+		}
+
+
+	}
 	| init_declarator_list ',' init_declarator
 	;
 
 init_declarator
 	: declarator {
-
+		for(int l = 0;l<4;l++)
+			$$.t[l] = $1.t[l];
+		$$.sentry = $1.sentry;
+		$$.count_p  = $1.count_p; //TODO maybe 0
+		$$.count_m  = $1.count_m;
 	}
 	| declarator '=' initializer {
-
+		for(int l = 0;l<4;l++)
+			$$.t[l] = $1.t[l];
+		$$.sentry = $1.sentry;
+		$$.count_p  = $1.count_p; //TODO maybe 0
+		$$.count_m  = $1.count_m;
 	}
 	;
-
 declarator
 	: pointer direct_declarator {
-		printf("SIZE(%d) ",$1+$2);
+		//printf("SIZE(%d) ",$1+$2);
+		for(int l = 0;l<4;l++)
+			$$.t[l] = $2.t[l];
+		$$.sentry = $2.sentry;
+		$$.count_p  = $1.count_p;
+		$$.count_m  = $2.count_m;
+
 	}
 	| direct_declarator {
-		printf("SIZE(%d) ",$1);
+		for(int l = 0;l<4;l++)
+			$$.t[l] = $1.t[l];
+		$$.sentry = $1.sentry;
+		$$.count_p  = $1.count_p; //TODO maybe 0
+		$$.count_m  = $1.count_m;
+		//printf("SIZE(%d) ",$1);
+
 	}
 	;
 
 direct_declarator
 	: IDENTIFIER {
-		$$  = 0;
-		//TODO
+		$$.count_p  = 0;
+		$$.count_m  = 0;
+		$$.sentry = $1.sentry;
 	}
-        | direct_declarator '[' ']' {
-         	$$ = $1 +1;
-        	// TODO maybe add the array size
-        }
+        //| direct_declarator '[' ']' {
+        // 	$$.count_p = $1.count_p +1;
+       // 	// TODO maybe add the array size
+        //}
         | direct_declarator '[' CONST ']' {
-         	$$ = $1 +1;
-         	// TODO maybe add the array size
+         	//$$ = $1 +1;
+        	$$.t[direct_declarator] = $3.val;
+         	direct_declarator++;
+		$$.count_m = direct_declarator;
+
         }
         ;
-//| direct_declarator '[' constant_expression ']'
-//| '(' declarator ')'
-//| direct_declarator '(' parameter_type_list ')'
-//| direct_declarator '(' identifier_list ')'
-//| direct_declarator '(' ')'
 
 pointer
 	: '*'{
-	$$ = 1;
+		$$.count_p = 1;
 	}
 	//| '*' type_qualifier_list
 	| '*' pointer {
-	 $$ = $2 +1;
+	 	$$.count_p = $2.count_p +1;
 	}
 	//| '*' type_qualifier_list pointer
 	;

@@ -9,7 +9,6 @@ IS			(u|U|l|L)*
 	#include<string.h>
     #include "y.tab.h"
 	#include "defs.h"
-
 	void comment(void);
 %}
 
@@ -66,55 +65,73 @@ IS			(u|U|l|L)*
     printf("ID ");
     symbol id_s;
     copy_name(&id_s,yytext,strlen(yytext));
+    yylval.vv.string_val = strdup(yytext);
     int ret = add_symbol_entry(&id_s);
+    symbol_p tmp = 0;
+    int rep = lookup_symbol_entry(yytext,&tmp);
+    if(rep != 1)
+            printf("ERROR_ID ");
+    yylval.vv.sentry = tmp;
     return(IDENTIFIER);
 }
 
 0[xX]{H}+{IS}? {
     //TODO Hex to int
-    printf("CONST ");
+    yylval.vv.string_val = strdup(yytext);
+    printf("CONST_HEX ");
     return(CONST);
 }
 
 0{D}+{IS}? {
     //TODO unsigned long
-    printf("CONST ");
+    yylval.vv.string_val = strdup(yytext);
+    printf("CONST_UNSIGNED ");
     return(CONST);
 }
 
 {D}+{IS}? {
-    printf("CONST ");
+    yylval.vv.val = atoi(yytext);
+    printf("CONST_D_INT_1 ");
+    yylval.vv.string_val = strdup(yytext);
+
     return(CONST);
 }
 
 L?'(\\.|[^\\'])+' {
     printf("CONST ");
     return(CONST);
+    yylval.vv.string_val = strdup(yytext);
 }
 
 {D}+{E}{FS}? {
-    printf("CONST ");
+    //yyval = atoi(yytext);
+    printf("CONST_INT_2 ");
+    yylval.vv.string_val = strdup(yytext);
     return(CONST);
 }
 
 {D}*"."{D}+({E})?{FS}? {
-    printf("CONST ");
+    printf("CONST_D.D.FS ");
+    yylval.vv.string_val = strdup(yytext);
     return(CONST);
 }
 
 {D}+"."{D}*({E})?{FS}? {
-    //TODO float con = to_float(yytext);
-    //TODOyyval = con;
-    printf("CONST ");
+    //TODO float con = to_float( yytext );
+    //TODO yyval = con;
+    yylval.vv.string_val = strdup(yytext);
+    printf("CONST_D.D.E.FS ");
     return(CONST);
 }
 
 L?\"(\\.|[^\\"])*\"	{
     printf("STRING ");
+    yylval.vv.string_val = strdup(yytext);
     return(STRING);
 }
 
 "&&" {
+
     return(AND_OP);
 }
 

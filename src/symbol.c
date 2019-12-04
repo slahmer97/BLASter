@@ -61,7 +61,20 @@ void display_symbol_table(void){
     symbol_p s;
 
     for(s=tsymbol; s != NULL; s=s->hh.next) {
-        printf("name :  %s -- is_dec : %d -- is_init : %d -- type : %d\n", s->name,s->is_dec,s->is_init,s->type);
+        if(s->type == VAR_ARR){
+            printf("name :  %s -- is_dec : %d -- is_init : %d -- type : Arr -- Direct_point : %d -- Vec_pointer : %d --- ", s->name,s->is_dec,s->is_init,s->arr.dimention_m,s->arr.dimention_p);
+            printf("[");
+            for (int i = 0; i < 4; ++i){
+                if(i == 3)
+                    printf("%d",s->arr.size[i]);
+                else
+                    printf("%d,",s->arr.size[i]);
+
+            }
+            printf("]\n");
+        }
+        else
+            printf("name :  %s -- is_dec : %d -- is_init : %d -- type : %d\n", s->name,s->is_dec,s->is_init,s->type);
     }
 }
 

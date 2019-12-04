@@ -7,17 +7,31 @@
 #define IDLEN 50
 
 #include <uthash.h>
-
 typedef struct __symbol__ symbol;
 typedef symbol* symbol_p;
 symbol_p tsymbol;
 
+#define VAR_SYM 999999
+#define VAR_ARR 999999
+#define DIM_MAX 10 //TODO change later to dynamic
 
 struct __symbol__ {
     char name[IDLEN];
     int type;
     union{
         //TODO
+        struct __sym_var__{
+            unsigned int type;
+        }var;
+
+        struct __sym_arr_{
+            unsigned int type;
+            unsigned int is_static :1;
+            int dimention_m;
+            int dimention_p;
+            int size[10];
+        }arr;
+        struct __symbol__* inner_tsym;
     };
 
     unsigned short is_dec : 1; // check if this entry (var,pointer,function,...) was declared
@@ -26,11 +40,10 @@ struct __symbol__ {
     UT_hash_handle hh; /* makes this structure hashable */
 };
 
-struct ptr_entry__{
-    int stat : 1;
-    unsigned int dimentions;
-    int * size; //10,2
-};
+
+
+
+
 
 
 

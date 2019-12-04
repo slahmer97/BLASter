@@ -7,7 +7,6 @@ extern symbol_p tsymbol;
 
 
 int main() {
-    long int;
     tsymbol = 0;
     line_counter = 0;
     yyin = fopen("../test_sources/test1", "r");
