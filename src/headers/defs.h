@@ -7,7 +7,7 @@
 
 #include <symbol.h>
 
-
+#define PRIMARY_EXP 999999
 
 int line_counter;
 

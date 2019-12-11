@@ -11,7 +11,8 @@
 	struct {
 		int count_p;
 		int count_m;
-		int type;
+		int type; //basic type..int float...
+		int type2;//type
 		int size;
 		int val;
 		float fval;
@@ -51,6 +52,7 @@ declaration :
 
 	//restore the current type variable to -1
 	 current_type_var = 0;
+	//printf("reinit typevar : %d",current_type_var);
 
 	}
 	; //==========================================================USED
@@ -175,9 +177,15 @@ pointer
 
 
 initializer
-	:primary_expression
+	:primary_expression{
+		// exemple type ID1 =initializer(20),ID2 = initializer(a),ID3=initializer(2.3);
+
+
+	}
 	//: assignment_expression TODO change later
-	| '{' initializer_list '}'
+	//| '{' initializer_list '}'{
+		//exemple type ID1 = {...},ID2 = {{???},{....},...}
+	//}
 	//| '{' initializer_list ',' '}'
 	;
 initializer_list
@@ -186,7 +194,7 @@ initializer_list
 	;
 primary_expression
 	: IDENTIFIER {
-
+		$$.type = IDENTIFIER
 	}
 	| CONST_INT {
 		$$.type = CONST_INT;
@@ -198,7 +206,7 @@ primary_expression
 	//| STRING {
 	//TODO Not implemented yet
 	//}
-	//| '(' expression ')'
+	//| '(' expression ')' 4*1+3
 	;
 
 

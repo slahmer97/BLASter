@@ -22,5 +22,18 @@ set(
 add_executable(blaster src/main.c ${BLAST_SRC})
 target_compile_options(blaster PRIVATE  -Wall -Werror=implicit-function-declaration)
 
+
+
+
+
+#TODO Serradje....START
+
+add_executable(result test_sources/out.c)
+
+
+
+
+
+#serradje...END
 #TODO add testing exec
 
