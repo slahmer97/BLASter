@@ -3,8 +3,9 @@
 	#include<defs.h>
 	#include<y.tab.h>
 
-	int for_detector = 0;
-	int direct_declarator = 0;
+	int for_depth_counter_var = 0;
+	int direct_declarator_var = 0;
+	int current_type_var = 0;
 %}
 %union{
 	struct {
@@ -17,6 +18,7 @@
 		void * sentry;
 		int t[4];
 		char* string_val;
+		int type_counter;
 	}vv;
 
 }
@@ -38,18 +40,29 @@ declaration_list
 	: declaration
 	| declaration_list declaration
 	;//=================================================USED
-declaration
-	: declaration_specifiers ';'
+declaration :
+	//: declaration_specifiers ';' // long; or int;
 	//we have type in declaration_specifiers
 	// check if declaration_specifier type fits into all items of init_declarator_list
-	| declaration_specifiers init_declarator_list ';'
+	declaration_specifiers init_declarator_list ';' {
+
+
+
+
+	//restore the current type variable to -1
+	 current_type_var = 0;
+
+	}
 	; //==========================================================USED
 
 declaration_specifiers
 	:
 	type_specifier {
-		 $$.type = $1.type;
+		 //$$.type = $1.type; INT or FLAT ...
+		 //store the current type in a global variable....TODO
 		 //TODO check composed types=====!
+		 current_type_var = $1.type;
+		 printf("current type : %d",current_type_var);
 	}
 	//| type_specifier declaration_specifiers // int ..
 	//| type_qualifier declaration_specifiers //const int ...
@@ -133,7 +146,7 @@ direct_declarator
 	: IDENTIFIER {
 		$$.count_p  = 0;
 		$$.count_m  = 0;
-		direct_declarator = 0;
+		direct_declarator_var = 0;
 		$$.sentry = $1.sentry;
 	}
         //| direct_declarator '[' ']' {
@@ -142,9 +155,9 @@ direct_declarator
         //}
         | direct_declarator '[' CONST_INT ']' {
          	//$$ = $1 +1;
-        	$$.t[direct_declarator] = $3.val;
-         	direct_declarator++;
-		$$.count_m = direct_declarator;
+        	$$.t[direct_declarator_var] = $3.val;
+         	direct_declarator_var++;
+		$$.count_m = direct_declarator_var;
 
         }
         ;
