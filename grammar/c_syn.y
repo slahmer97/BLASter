@@ -11,8 +11,7 @@
 	struct {
 		int count_p;
 		int count_m;
-		int type; //basic type..int float...
-		int type2;//type
+		int type;
 		int size;
 		int val;
 		float fval;
@@ -33,10 +32,72 @@
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
 %type <vv> type_specifier declaration_specifiers primary_expression
 %type <vv> pointer direct_declarator declarator init_declarator
-%start declaration_list
+%start translation_unit
 %%
 
+//==================================START-EXTERNAL======================================================================
+translation_unit
+	: compound_statement
+	| translation_unit compound_statement
+	;
+compound_statement
+	: '{' '}'
+	| '{' statement_list '}'
+	| '{' declaration_list '}'
+	| '{' declaration_list statement_list '}'
+	;
 
+//=====================================EXTERNAL-END=====================================================================
+
+//=====================================statement-START==================================================================
+
+statement_list
+	: statement
+	| statement_list statement
+statement
+	: //labeled_statement
+	  compound_statement
+	| expression_statement
+	| selection_statement
+	| iteration_statement
+	;
+
+expression_statement
+	: ';'
+	| expression ';'
+	;
+
+//=======================================Statement-END==================================================================
+
+//=======================================LOOP-Conditional-EXR================================================================
+selection_statement
+	: IF '(' expression ')' compound_statement
+	| IF '(' expression ')' compound_statement ELSE compound_statement
+
+iteration_statement :
+	 WHILE {printf("START-WHILE\n ");}'(' expression ')' compound_statement {printf("END-WHILE\n ");}
+	//| DO compound_statement WHILE '(' expression ')' ';'{printf("END-DOWHITE\n ");}
+	//| FOR {printf("for ");} '(' expression_statement expression_statement ')' compound_statement {printf("END-FOR\n ");}
+	| FOR {printf("for ");}'(' expression_statement expression_statement expression')' compound_statement {printf("END-FOR\n ");}
+
+//=======================================CONDITIONAL-EXPR-END===========================================================
+
+//==================================START-ASSIGNEMENT===================================================================
+expression:
+ 	assignment_expression
+	| expression ',' assignment_expression
+	;
+assignment_expression :
+	// conditional_expression
+	primary_expression
+	| primary_expression '=' assignment_expression
+	;
+
+
+assignment_operator
+	: '='
+	;
+//====================================ASSIGNEMENT-END=================================================================
 declaration_list
 	: declaration
 	| declaration_list declaration
@@ -45,15 +106,10 @@ declaration :
 	//: declaration_specifiers ';' // long; or int;
 	//we have type in declaration_specifiers
 	// check if declaration_specifier type fits into all items of init_declarator_list
+	{ printf("After type : %d",current_type_var);}
 	declaration_specifiers init_declarator_list ';' {
-
-
-
-
 	//restore the current type variable to -1
 	 current_type_var = 0;
-	//printf("reinit typevar : %d",current_type_var);
-
 	}
 	; //==========================================================USED
 
@@ -86,7 +142,6 @@ type_specifier
 		//printf("TYPE : %d",$$);
 	}
 	;
-
 init_declarator_list
 	: init_declarator {
 		symbol_p varp = (symbol_p) $1.sentry;
@@ -105,7 +160,6 @@ init_declarator_list
 	}
 	| init_declarator_list ',' init_declarator
 	;
-
 init_declarator
 	: declarator {
 		for(int l = 0;l<4;l++)
@@ -143,7 +197,6 @@ declarator
 
 	}
 	;
-
 direct_declarator
 	: IDENTIFIER {
 		$$.count_p  = 0;
@@ -162,6 +215,11 @@ direct_declarator
 		$$.count_m = direct_declarator_var;
 
         }
+        | direct_declarator '(' ')'
+
+        | direct_declarator '(' identifier_list ')'
+
+
         ;
 
 pointer
@@ -177,15 +235,9 @@ pointer
 
 
 initializer
-	:primary_expression{
-		// exemple type ID1 =initializer(20),ID2 = initializer(a),ID3=initializer(2.3);
-
-
-	}
+	:primary_expression
 	//: assignment_expression TODO change later
-	//| '{' initializer_list '}'{
-		//exemple type ID1 = {...},ID2 = {{???},{....},...}
-	//}
+	| '{' initializer_list '}'
 	//| '{' initializer_list ',' '}'
 	;
 initializer_list
@@ -194,7 +246,7 @@ initializer_list
 	;
 primary_expression
 	: IDENTIFIER {
-		$$.type = IDENTIFIER
+
 	}
 	| CONST_INT {
 		$$.type = CONST_INT;
@@ -206,13 +258,13 @@ primary_expression
 	//| STRING {
 	//TODO Not implemented yet
 	//}
-	//| '(' expression ')' 4*1+3
+	//| '(' expression ')'
 	;
 
-
-
-
-
+identifier_list
+	: IDENTIFIER
+	| identifier_list ',' IDENTIFIER
+	;
 %%
 
 int yyerror(const char *str)
