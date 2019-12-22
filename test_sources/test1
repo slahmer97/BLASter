@@ -2,14 +2,13 @@
   int a,c,d,i;
 
   int zzz;
-  /*a = 213;
-  //var[12] = (1231230);*/
-  int x;
-   int t[10];
-   int count = 0;
+  int z = a+c;
 
-     x++;
-
+   /*
+  for (a = 0;a<10;a = a + 1){
+    zzz[a] = 0;
+  }
+  */
 
 
 }

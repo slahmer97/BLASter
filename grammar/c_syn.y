@@ -34,9 +34,9 @@
 %token '(' ')' ';' '}' '{' ']' '[' '/' '*' '+' '-' '<' '>' '%'
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP INC DEC LEFT_OP RIGHT_OP
 %type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
-%type <vv> pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement
-//%type <vv> multiplicative_expression additive_expression shift_expression relational_expression equality_expression
-//%type <vv> and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression
+%type <vv> pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
+%type <vv> multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
+%type <vv> and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
 %start translation_unit
 %%
 
@@ -108,7 +108,6 @@ statement
 		snprintf($$.string_exp,8, "iter_st");
 	}
 	;
-
 expression_statement
 	: ';'
 	| expression ';'
@@ -120,7 +119,6 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' compound_statement
 	| IF '(' expression ')' compound_statement ELSE compound_statement
-
 iteration_statement :
 	 WHILE {printf("START-WHILE\n ");}'(' expression ')' compound_statement {printf("END-WHILE\n ");}
 
@@ -141,92 +139,275 @@ expression:
 
 	}
 	;
-
 postfix_expression
 	: primary_expression {
+		$$.string_exp = $1.string_exp;
 		printf("\n----%s------------\n",$1.string_exp);
 	}
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression INC
-	| postfix_expression DEC
+	//| postfix_expression '[' expression ']'
+	//| postfix_expression '(' ')'
+	//| postfix_expression INC
+	//| postfix_expression DEC
 
 unary_expression
-	: postfix_expression
-	| INC unary_expression
-	| DEC unary_expression
+	: postfix_expression {
+
+		$$.string_exp = $1.string_exp;
+	}
+	| INC unary_expression {
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len2+3);
+		snprintf($$.string_exp,len2+3, "++%s",$2.string_exp);
+		free($2.string_exp);
+	}
+	| DEC unary_expression {
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len2+3);
+		snprintf($$.string_exp,len2+3, "--%s",$2.string_exp);
+		free($2.string_exp);
+	}
 	;
-
-
 multiplicative_expression
-	: unary_expression
-	| multiplicative_expression '*' unary_expression
-	| multiplicative_expression '/' unary_expression
-	| multiplicative_expression '%' unary_expression
-	;
+	: unary_expression {
 
+		$$.string_exp = $1.string_exp;
+	}
+	| multiplicative_expression '*' unary_expression {
+
+
+			int len1 = strlen($1.string_exp);
+        		int len2 = strlen($3.string_exp);
+        		$$.string_exp = malloc(len1+len2+2);
+        		snprintf($$.string_exp,len1+len2+2, "%s*%s",$1.string_exp,$3.string_exp);
+        		free($1.string_exp);
+        		free($3.string_exp);
+
+	}
+	| multiplicative_expression '/' unary_expression {
+
+			int len1 = strlen($1.string_exp);
+			int len2 = strlen($3.string_exp);
+			$$.string_exp = malloc(len1+len2+2);
+			snprintf($$.string_exp,len1+len2+2, "%s/%s",$1.string_exp,$3.string_exp);
+			free($1.string_exp);
+			free($3.string_exp);
+
+	}
+	| multiplicative_expression '%' unary_expression {
+
+			int len1 = strlen($1.string_exp);
+			int len2 = strlen($3.string_exp);
+			$$.string_exp = malloc(len1+len2+2);
+			snprintf($$.string_exp,len1+len2+2, "%s%%s",$1.string_exp,$3.string_exp);
+			free($1.string_exp);
+			free($3.string_exp);
+
+	}
+	;
 additive_expression
-	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression
-	| additive_expression '-' multiplicative_expression
+	: multiplicative_expression {
+
+		$$.string_exp = $1.string_exp;
+	}
+	| additive_expression '+' multiplicative_expression {
+
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s+%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| additive_expression '-' multiplicative_expression {
+
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s-%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 	;
 shift_expression
-	: additive_expression
-	| shift_expression LEFT_OP additive_expression
-	| shift_expression RIGHT_OP additive_expression
+	: additive_expression {
+
+		$$.string_exp = $1.string_exp;
+	}
+	| shift_expression LEFT_OP additive_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s<<%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| shift_expression RIGHT_OP additive_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s>>%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 	;
 relational_expression
-	: shift_expression
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
-	| relational_expression LE_OP shift_expression
-	| relational_expression GE_OP shift_expression
-	;
+	: shift_expression{
 
+		$$.string_exp = $1.string_exp;
+	}
+	| relational_expression '<' shift_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s<%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| relational_expression '>' shift_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s>%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| relational_expression LE_OP shift_expression{
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s<=%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| relational_expression GE_OP shift_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s>=%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	;
 equality_expression
-	: relational_expression
-	| equality_expression EQ_OP relational_expression
-	| equality_expression NE_OP relational_expression
+	: relational_expression{
+
+		$$.string_exp = $1.string_exp;
+	}
+	| equality_expression EQ_OP relational_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s==%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	| equality_expression NE_OP relational_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s!=%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 	;
 and_expression
-	: equality_expression
-	| and_expression '&' equality_expression
-	;
+	: equality_expression {
 
+		$$.string_exp = $1.string_exp;
+	}
+	| and_expression '&' equality_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s&%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	;
 exclusive_or_expression
-	: and_expression
-	| exclusive_or_expression '^' and_expression
-	;
+	: and_expression{
 
+		$$.string_exp = $1.string_exp;
+	}
+	| exclusive_or_expression '^' and_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s^%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	;
 inclusive_or_expression
-	: exclusive_or_expression
-	| inclusive_or_expression '|' exclusive_or_expression
-	;
+	: exclusive_or_expression {
 
+		$$.string_exp = $1.string_exp;
+	}
+	| inclusive_or_expression '|' exclusive_or_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s|%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	;
 logical_and_expression
-	: inclusive_or_expression
-	| logical_and_expression AND_OP inclusive_or_expression
+	: inclusive_or_expression {
+
+		$$.string_exp = $1.string_exp;
+	}
+	| logical_and_expression AND_OP inclusive_or_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s&&%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 	;
 logical_or_expression
-	: logical_and_expression
-	| logical_or_expression OR_OP logical_and_expression
+	: logical_and_expression {
+
+		$$.string_exp = $1.string_exp;
+	}
+	| logical_or_expression OR_OP logical_and_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s||%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 	;
 //TODO add conditional assignement
 
 assignment_expression :
-	logical_and_expression
-	| unary_expression '=' assignment_expression
+	logical_and_expression {
+		$$.string_exp = $1.string_exp;
+	}
+	| unary_expression assignment_operator assignment_expression {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s=%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+		free($3.string_exp);
+	}
 	;
-
 assignment_operator
-	: '='
+	: '=' {
+		$$.string_exp = malloc(2);
+		snprintf($$.string_exp,2, "=");
+	}
 	;
 //====================================ASSIGNEMENT-END=================================================================
-//CHECKING
+//DONE TODO================================================
 declaration_list
 	: declaration {
 		$$.string_exp = $1.string_exp;
-		printf("\n===============\n%s\n================\n",$1.string_exp);
+		//printf("\n===============\n%s\n================\n",$1.string_exp);
 	}
 	| declaration_list declaration {
 
