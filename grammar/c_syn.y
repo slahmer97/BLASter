@@ -36,7 +36,7 @@
 %type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
 %type <vv> pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
 %type <vv> multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
-%type <vv> and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
+%type <vv> expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
 %start translation_unit
 %%
 
@@ -67,8 +67,8 @@ compound_statement
 	| '{' declaration_list statement_list '}' {
 		int len1 = strlen($2.string_exp);
 		int len2 = strlen($3.string_exp);
-		$$.string_exp = malloc(len1+len2+4);
-		snprintf($$.string_exp,len1+len2+4, "{%s %s}",$2.string_exp,$3.string_exp);
+		$$.string_exp = malloc(len1+len2+6);
+		snprintf($$.string_exp,len1+len2+6, "{\n%s\n%s\n}",$2.string_exp,$3.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
 
@@ -84,18 +84,21 @@ statement_list
 		   $$.string_exp = $1.string_exp;
 	}
 	| statement_list statement {
-		//TODO recheck
-		   $$.string_exp = $1.string_exp;
+                int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
 	}
 statement
 	: //labeled_statement
 	  compound_statement {
-	   $$.string_exp = $1.string_exp;
+	  	 $$.string_exp = $1.string_exp;
 	  }
 	| expression_statement {
-
-		$$.string_exp = malloc(8);
-		snprintf($$.string_exp,8, "expr_st");
+	 	$$.string_exp = $1.string_exp;
+		//PROBLEM TODO
 
 	}
 	| selection_statement {
@@ -109,8 +112,18 @@ statement
 	}
 	;
 expression_statement
-	: ';'
-	| expression ';'
+	: ';' {
+		$$.string_exp = malloc(2);
+		snprintf($$.string_exp,2, ";");
+
+	}
+	| expression ';' {
+			int len = strlen($1.string_exp);
+			$$.string_exp = malloc(len+2);
+        		snprintf($$.string_exp,len+2, "%s;",$1.string_exp);
+			printf("\n---------TEST777------ | %s |---------\n",$1.string_exp);
+			free($1.string_exp);
+	}
 	;
 
 //=======================================Statement-END==================================================================
@@ -129,20 +142,24 @@ iteration_statement :
 //==================================START-ASSIGNEMENT===================================================================
 expression:
  	assignment_expression {
- 		$$.string_exp = malloc(10);
- 		memcpy($$.string_exp,"expressio",9);
+ 		$$.string_exp = $1.string_exp;
+ 		printf("\n---------TEST145--- |%s|\n",$$.string_exp );
  	}
 	| expression ',' assignment_expression {
 
-		$$.string_exp = malloc(10);
-		memcpy($$.string_exp,"expressio",9);
-
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+		printf("\n---------TEST145+1--- |%s|\n",$$.string_exp );
 	}
 	;
 postfix_expression
 	: primary_expression {
 		$$.string_exp = $1.string_exp;
-		printf("\n----%s------------\n",$1.string_exp);
+		printf("\n---TEST1-%s------------\n",$$.string_exp);
 	}
 	//| postfix_expression '[' expression ']'
 	//| postfix_expression '(' ')'
@@ -151,8 +168,8 @@ postfix_expression
 
 unary_expression
 	: postfix_expression {
-
 		$$.string_exp = $1.string_exp;
+		printf("\n--------TEST999----| %s |----\n",$$.string_exp);
 	}
 	| INC unary_expression {
 		int len2 = strlen($2.string_exp);
@@ -169,8 +186,8 @@ unary_expression
 	;
 multiplicative_expression
 	: unary_expression {
-
 		$$.string_exp = $1.string_exp;
+		printf("\n---TEST10---%s\n",$$.string_exp);
 	}
 	| multiplicative_expression '*' unary_expression {
 
@@ -197,8 +214,8 @@ multiplicative_expression
 
 			int len1 = strlen($1.string_exp);
 			int len2 = strlen($3.string_exp);
-			$$.string_exp = malloc(len1+len2+2);
-			snprintf($$.string_exp,len1+len2+2, "%s%%s",$1.string_exp,$3.string_exp);
+			$$.string_exp = malloc(len1+len2+4);
+			snprintf($$.string_exp,len1+len2+4, "%s%%%s",$1.string_exp,$3.string_exp);
 			free($1.string_exp);
 			free($3.string_exp);
 
@@ -390,7 +407,9 @@ assignment_expression :
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_exp);
 		$$.string_exp = malloc(len1+len2+2);
+		printf("\n-------TEST88--- |%s| |%s| \n",$1.string_exp,$3.string_exp);
 		snprintf($$.string_exp,len1+len2+2, "%s=%s",$1.string_exp,$3.string_exp);
+		printf("\n-------TEST88+1--- |%s| \n",$$.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
@@ -459,8 +478,6 @@ declaration_specifiers
 	//| type_specifier declaration_specifiers // int ..
 	//| type_qualifier declaration_specifiers //const int ...
 	;
-//| storage_class_specifier
-//| storage_class_specifier declaration_specifiers
 //=======================================================USED
 //DONE
 type_specifier
@@ -673,35 +690,30 @@ pointer
 
 initializer
 	: assignment_expression {
-	 	$$.string_exp = malloc(8);
-		snprintf($$.string_exp,8, "ass_exp");
+	 	$$.string_exp = $1.string_exp;
+		//snprintf($$.string_exp,8, "ass_exp");
 
 	}
 	| '{' initializer_list '}' {
 		int len1 = strlen($2.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
+		free($2.string_exp);
 	}
 	;
 initializer_list
 	: initializer {
-		$$.string_exp = malloc(11);
-		snprintf($$.string_exp,11, "ass_exp_lst");
-		//$$.string_exp = malloc(11);
-	 	//memcpy($$.string_exp,"initializer",11);
+		$$.string_exp = $1.string_exp;
 	}
 	| initializer_list ',' initializer {
-		$$.string_exp = malloc(11);
-		snprintf($$.string_exp,11, "ass_exp_lst");
-		/*
+
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_exp);
-		$$.string_exp = malloc(len1+len2+1);
-		memset($$.string_exp,0,len1+len2+1);
-		snprintf($$.string_exp,len1+len2+1, "%s,%s",$1.string_exp,$3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
-		*/
+
 	}
 	;
 
@@ -723,8 +735,8 @@ primary_expression
 		}
 
 		int len = strlen(curr_var_name_tmp);
-		$$.string_exp = malloc(len);
-		memcpy($$.string_exp,curr_var_name_tmp,len);
+		$$.string_exp = malloc(len+1);
+		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
 	}
 	| CONST_INT {
@@ -733,8 +745,8 @@ primary_expression
 
 		char * curr_var_name_tmp = $1.string_val;
 		int len = strlen(curr_var_name_tmp);
-		$$.string_exp = malloc(len);
-		memcpy($$.string_exp,curr_var_name_tmp,len);
+		$$.string_exp = malloc(len+1);
+		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
 	}
 	| CONST_FLOAT {
@@ -742,8 +754,8 @@ primary_expression
 
 		char * curr_var_name_tmp = $1.string_val;
 		int len = strlen(curr_var_name_tmp);
-		$$.string_exp = malloc(len);
-		memcpy($$.string_exp,curr_var_name_tmp,len);
+		$$.string_exp = malloc(len+1);
+		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 	}
 	//| STRING {
 	//TODO Not implemented yet
@@ -751,11 +763,13 @@ primary_expression
 	| '(' expression ')' {
 
 		$$.type = EXPR;
-
 		char * curr_var_name_tmp = $2.string_exp;
 		int len = strlen(curr_var_name_tmp);
-		$$.string_exp = malloc(len+4);
+		$$.string_exp = malloc(len+3);
 		snprintf($$.string_exp,len+4, "(%s)",$2.string_exp);
+		free($2.string_exp);
+		printf("\n---------TEST766------ | %s |---------\n",$$.string_exp);
+
 	}
 	;
 

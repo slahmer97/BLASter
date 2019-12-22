@@ -1,14 +1,10 @@
 {
-  int a,c,d,i;
+  int a;
+   int b;
+  a = 123;
+  b = a * 123 / 123 * 123+a %a;
+  a = 99+88+77+66%123;
 
-  int zzz;
-  int z = a+c;
-
-   /*
-  for (a = 0;a<10;a = a + 1){
-    zzz[a] = 0;
-  }
-  */
 
 
 }

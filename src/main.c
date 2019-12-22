@@ -7,7 +7,6 @@ extern FILE *yyin, *yyout;
 int main() {
     globalData.symbol = create_shared_symbol("Blaster");
 
-
     tsymbol = 0;
     line_counter = 0;
     yyin = fopen("../test_sources/test1", "r");
