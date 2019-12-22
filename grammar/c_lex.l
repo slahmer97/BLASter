@@ -75,13 +75,6 @@ IS			(u|U|l|L)*
     return(IDENTIFIER);
 }
 
-0[xX]{H}+{IS}? {
-    //TODO Hex to int
-    yylval.vv.string_val = strdup(yytext);
-    printf("CONST ");
-    return(CONST);
-}
-
 0{D}+{IS}? {
     //TODO unsigned long
     yylval.vv.string_val = strdup(yytext);
@@ -130,6 +123,16 @@ L?\"(\\.|[^\\"])*\"	{
     return(STRING);
 }
 
+"++" {
+    printf("++ ");
+
+    return (INC);
+}
+"--" {
+    printf("--");
+
+    return (DEC);
+}
 "&&" {
 
     return(AND_OP);
@@ -142,7 +145,12 @@ L?\"(\\.|[^\\"])*\"	{
 "<=" {
     return(LE_OP);
 }
-
+"<" {
+    return('<');
+}
+">" {
+    return('>');
+}
 ">=" {
     return(GE_OP);
 }
@@ -202,19 +210,22 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 "-"	{
+    printf("- ");
     return('-');
 }
 
 "+"	{
+    printf("+ ");
     return('+');
 }
 
 "*"	{
-    printf("PTR ");
+    printf("* ");
     return('*');
 }
 
 "/" {
+    printf("/ ");
     return('/');
 }
 "!" {

@@ -28,8 +28,8 @@
 %token CONST_Q //type qualifier  const int...
 %token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST
 %token '='
-%token '(' ')' ';' '}' '{' ']' '['
-%token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP
+%token '(' ')' ';' '}' '{' ']' '[' '/' '*' '+' '-' '<' '>'
+%token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP INC DEC
 %type <vv> type_specifier declaration_specifiers primary_expression
 %type <vv> pointer direct_declarator declarator init_declarator
 %start translation_unit
@@ -76,8 +76,7 @@ selection_statement
 
 iteration_statement :
 	 WHILE {printf("START-WHILE\n ");}'(' expression ')' compound_statement {printf("END-WHILE\n ");}
-	//| DO compound_statement WHILE '(' expression ')' ';'{printf("END-DOWHITE\n ");}
-	//| FOR {printf("for ");} '(' expression_statement expression_statement ')' compound_statement {printf("END-FOR\n ");}
+
 	| FOR {printf("for ");}'(' expression_statement expression_statement expression')' compound_statement {printf("END-FOR\n ");}
 
 //=======================================CONDITIONAL-EXPR-END===========================================================
@@ -87,12 +86,38 @@ expression:
  	assignment_expression
 	| expression ',' assignment_expression
 	;
-assignment_expression :
-	// conditional_expression
-	primary_expression
-	| primary_expression '=' assignment_expression
+
+postfix_expression
+	: primary_expression
+	| postfix_expression '[' expression ']'
+	| postfix_expression '(' ')'
+	| postfix_expression INC
+	| postfix_expression DEC
+
+unary_expression
+	: postfix_expression
+	| INC unary_expression
+	| DEC unary_expression
 	;
 
+
+multiplicative_expression
+	: unary_expression
+	| multiplicative_expression '*' unary_expression
+	| multiplicative_expression '/' unary_expression
+	//| multiplicative_expression '%' unary_expression
+	;
+
+additive_expression
+	: multiplicative_expression
+	| additive_expression '+' multiplicative_expression
+	| additive_expression '-' multiplicative_expression
+	;
+
+assignment_expression :
+	additive_expression
+	| unary_expression '=' assignment_expression
+	;
 
 assignment_operator
 	: '='
@@ -235,10 +260,9 @@ pointer
 
 
 initializer
-	:primary_expression
-	//: assignment_expression TODO change later
+	: assignment_expression
 	| '{' initializer_list '}'
-	//| '{' initializer_list ',' '}'
+	| '{' initializer_list ',' '}'
 	;
 initializer_list
 	: initializer
@@ -246,6 +270,7 @@ initializer_list
 	;
 primary_expression
 	: IDENTIFIER {
+		$$.type = IDENTIFIER;
 
 	}
 	| CONST_INT {
@@ -258,7 +283,9 @@ primary_expression
 	//| STRING {
 	//TODO Not implemented yet
 	//}
-	//| '(' expression ')'
+	| '(' expression ')' {
+		$$.type = EXPR;
+	}
 	;
 
 identifier_list

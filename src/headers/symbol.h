@@ -7,8 +7,16 @@
 #define IDLEN 50
 
 #include <uthash.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/shm.h>
+#include <sys/stat.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <sys/wait.h>
 typedef struct __symbol__ symbol;
 typedef symbol* symbol_p;
+struct global_data globalData;
 symbol_p tsymbol;
 
 #define VAR_SYM 999999
@@ -37,27 +45,40 @@ struct __symbol__ {
     unsigned short is_dec : 1; // check if this entry (var,pointer,function,...) was declared
     unsigned short is_init : 1; // check if this entry (var,pointer,... ) was initialized
 
-    UT_hash_handle hh; /* makes this structure hashable */
+
+
+    unsigned short is_used:1;
+};
+
+
+#define N 1000
+#define CODE_LEN 100000
+struct shared_symbol{
+    int count;
+    symbol entries[N];
+
+    char code_space[CODE_LEN];
+};
+
+
+struct global_data{
+    sem_t * sem_symbol;
+    struct shared_symbol* symbol;
+
+    char* code;
+    sem_t * sem_prod_cons;
+
+
 };
 
 
 
 
 
-
-
-
-/**
- *              Insertion symbol into tsymbol(helper function)
- * @author : seyyid-ahmed lahmer
- * @brief : this function is used as helper to insert into tsymbol table [used in add_symbol_entry() : described below]
- *          it will allocate a new entry, then copy data into this new entry then perform insertion.
- *
- * @remarks : NO CHECK is perfomed in this function, EXCEPT for malloc return status,
- *            if malloc fails, exit is perfomed status 1 is returned
- *            IT DOES not deallocate symbol table if malloc fails TODO
- */
-static void hash_add_str(symbol_p p);
+struct shared_symbol* create_shared_symbol(char* name);
+void destroy_shared_symbol(char*name,struct shared_symbol* ret);
+struct shared_symbol* subscribe_shared_symbol(char*name);
+void unsubscribe_shared_symbol( struct shared_symbol* ret);
 
 
 /**
@@ -85,7 +106,6 @@ int lookup_symbol_entry(const char*,symbol_p* out);
 
 void display_symbol_table(void);
 
-void destroy_symbol_table(void);
 /**
  *
  * @param symbolP

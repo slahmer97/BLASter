@@ -1,39 +1,6 @@
 {
-/*
-    int a = 10;
-    int b=20;
-    int m[10][10];
-    int c,q=2,E=123;
-
-    if (2){
-        int azz=10;
-    } else {
-        if(3){
-
-        }
-
-    }
-    for (int b=2;int a = 1){
-
-        }
-
-    */
-    a = 20;
-    while(i){}
-       for (a = 10;b = 23;c = 2){
-
-        }
-
+int f = 0;
+int k=231;
+int d = 12;
+int a = 3 + 2;
 }
-
-/*int a,b,c=12,d=34.3;
-float *t[12][32][10];
-int *r[2];
-
-a = 10;
-*/
-
-/*
-for FOR check if we are in all top level, else don't forward it to optimizer
-
-*/
