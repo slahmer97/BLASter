@@ -97,7 +97,7 @@ L?'(\\.|[^\\'])+' {
 }
 
 {D}+{E}{FS}? {
-    //yyval = atoi(yytext);
+    yylval.vv.val = atoi(yytext);
     printf("CONST_INT_2 ");
     yylval.vv.string_val = strdup(yytext);
     return(CONST);
@@ -134,25 +134,38 @@ L?\"(\\.|[^\\"])*\"	{
     return (DEC);
 }
 "&&" {
-
+    printf("&& ");
     return(AND_OP);
 }
 
 "||" {
+    printf("|| ");
     return(OR_OP);
 }
 
 "<=" {
+    printf("<= ");
     return(LE_OP);
 }
 "<" {
+    printf("< ");
     return('<');
 }
 ">" {
+    printf("> ");
     return('>');
 }
 ">=" {
+    printf(">= ");
     return(GE_OP);
+}
+"<<" {
+    printf("<< ");
+    return(LEFT_OP);
+}
+">>" {
+    printf(">> ");
+    return(RIGHT_OP);
 }
 
 "==" {
@@ -183,7 +196,7 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 "="	{
-    printf("EQ ");
+    printf("= ");
     return('=');
 }
 
@@ -208,6 +221,12 @@ L?\"(\\.|[^\\"])*\"	{
 "."	{
     return('.');
 }
+
+"%"	{
+    printf("% ");
+    return('%');
+}
+
 
 "-"	{
     printf("- ");

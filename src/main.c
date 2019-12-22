@@ -13,7 +13,7 @@ int main() {
     yyin = fopen("../test_sources/test1", "r");
     line_counter = 0;
     yyparse();
-    //display_symbol_table();
+    display_symbol_table();
 
 
 
@@ -23,7 +23,6 @@ int main() {
    //sem_post(globalData.sem_symbol);
 
     destroy_shared_symbol("Blaster",globalData.symbol);
-    printf("Sym table was destroyed \n");
 
 
     return 0;

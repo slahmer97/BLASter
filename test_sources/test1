@@ -1,6 +1,8 @@
 {
-int f = 0;
-int k=231;
-int d = 12;
-int a = 3 + 2;
+  int var[12];
+  int a;
+  a = 213;
+  var[12] = (1231230);
+
 }
+
