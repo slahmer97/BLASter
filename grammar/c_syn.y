@@ -33,8 +33,8 @@
 %token '='
 %token '(' ')' ';' '}' '{' ']' '[' '/' '*' '+' '-' '<' '>' '%'
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP INC DEC LEFT_OP RIGHT_OP
-%type <vv> type_specifier declaration_specifiers primary_expression expression identifier_list
-%type <vv> pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list
+%type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
+%type <vv> pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement
 //%type <vv> multiplicative_expression additive_expression shift_expression relational_expression equality_expression
 //%type <vv> and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression
 %start translation_unit
@@ -42,14 +42,37 @@
 
 //==================================START-EXTERNAL======================================================================
 translation_unit
-	: compound_statement
-	| translation_unit compound_statement
+	: compound_statement {
+		printf("-->\n%s\n",$1.string_exp);
+	}
+	//| translation_unit compound_statement
 	;
 compound_statement
-	: '{' '}'
-	| '{' statement_list '}'
-	| '{' declaration_list '}'
-	| '{' declaration_list statement_list '}'
+	: '{' '}' {
+		$$.string_exp = malloc(4);
+		snprintf($$.string_exp,4, "{ }");
+	}
+	| '{' statement_list '}' {
+		int len1 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+3);
+		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
+		free($2.string_exp);
+	}
+	| '{' declaration_list '}' {
+		int len1 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+3);
+		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
+		free($2.string_exp);
+	}
+	| '{' declaration_list statement_list '}' {
+		int len1 = strlen($2.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+4);
+		snprintf($$.string_exp,len1+len2+4, "{%s %s}",$2.string_exp,$3.string_exp);
+		free($2.string_exp);
+		free($3.string_exp);
+
+	}
 	;
 
 //=====================================EXTERNAL-END=====================================================================
@@ -57,14 +80,33 @@ compound_statement
 //=====================================statement-START==================================================================
 
 statement_list
-	: statement
-	| statement_list statement
+	: statement {
+		   $$.string_exp = $1.string_exp;
+	}
+	| statement_list statement {
+		//TODO recheck
+		   $$.string_exp = $1.string_exp;
+	}
 statement
 	: //labeled_statement
-	  compound_statement
-	| expression_statement
-	| selection_statement
-	| iteration_statement
+	  compound_statement {
+	   $$.string_exp = $1.string_exp;
+	  }
+	| expression_statement {
+
+		$$.string_exp = malloc(8);
+		snprintf($$.string_exp,8, "expr_st");
+
+	}
+	| selection_statement {
+
+		$$.string_exp = malloc(8);
+		snprintf($$.string_exp,8, "sele_st");
+	}
+	| iteration_statement {
+		$$.string_exp = malloc(8);
+		snprintf($$.string_exp,8, "iter_st");
+	}
 	;
 
 expression_statement
@@ -180,31 +222,48 @@ assignment_operator
 	: '='
 	;
 //====================================ASSIGNEMENT-END=================================================================
+//CHECKING
 declaration_list
 	: declaration {
-		//printf("\n===============\n%s\n================\n",$1.string_exp);
+		$$.string_exp = $1.string_exp;
+		printf("\n===============\n%s\n================\n",$1.string_exp);
 	}
-	| declaration_list declaration
+	| declaration_list declaration {
+
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s %s",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+
+	}
 	;//=================================================USED
+
+//DONE
 declaration :
 	//: declaration_specifiers ';' // long; or int;
 	//we have type in declaration_specifiers
 	// check if declaration_specifier type fits into all items of init_declarator_list
-	{ printf("After type : %d",current_type_var);}
+	//{ printf("After type : %d",current_type_var);}
 	declaration_specifiers init_declarator_list ';' {
-	//restore the current type variable to -1
-	 current_type_var = -1;
+		//restore the current type variable to -1
+		 current_type_var = -1;
 
-	//COPY
-	//int len1 = strlen($1.string_exp);
-	//int len2 = strlen($2.string_exp);
-	//$$.string_exp = malloc(len1+len2+1);
-	//snprintf($$.string_exp,len1+len2+1, "%sinit_dec_list;",$1.string_exp); TODO $2.string_exp
-	//free($1.string_exp);
-	//free($2.string_exp);
+		//COPY
+		// TODO Probelem here segfault!!!!!
+
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s %s;",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+
 	}
 	; //==========================================================USED
 
+//DONE
 declaration_specifiers
 	:
 	type_specifier {
@@ -214,8 +273,7 @@ declaration_specifiers
 		 current_type_var = $1.type;
 		 printf("current type : %d",current_type_var);
 
-
-		 //$$.string_exp = $1.string_exp;
+		 $$.string_exp = $1.string_exp;
 	}
 	//| type_specifier declaration_specifiers // int ..
 	//| type_qualifier declaration_specifiers //const int ...
@@ -223,30 +281,32 @@ declaration_specifiers
 //| storage_class_specifier
 //| storage_class_specifier declaration_specifiers
 //=======================================================USED
+//DONE
 type_specifier
 	: VOID {
 		$$.type = VOID;
 		//printf("TYPE : %d",$$);
 
-		//$$.string_exp = malloc(5);
-		//snprintf($$.string_exp,4, "void");
+		$$.string_exp = malloc(5);
+		snprintf($$.string_exp,5, "void");
 
 	}
 	| INT  {
 		$$.type = INT;
 		//printf("TYPE : %d",$$);
 
-		//$$.string_exp = malloc(4);
-		//snprintf($$.string_exp,3, "int");
+		$$.string_exp = malloc(4);
+		snprintf($$.string_exp,4, "int");
 	}
 	| FLOAT {
 		$$.type = FLOAT;
-		//printf("TYPE : %d",$$);
+		printf("TYPE : %d",$$);
 
-		//$$.string_exp = malloc(5);
-		//snprintf($$.string_exp,4, "float");
+		$$.string_exp = malloc(6);
+		snprintf($$.string_exp,6, "float");
 	}
 	;
+//DONE
 init_declarator_list
 	: init_declarator {
 		symbol_p varp = (symbol_p) $1.sentry;
@@ -261,22 +321,20 @@ init_declarator_list
 
 		}
 
-		//DELETE
-		//$$.string_exp = $1.string_exp;
+		$$.string_exp = $1.string_exp;
+
 	}
 	| init_declarator_list ',' init_declarator {
 
 
 	//COPY
-	/*	int len1 = strlen($1.string_exp);
-		int len2 = strlen($3.string_exp);
-		$$.string_exp = malloc(len1+len2+2);
-		memset($$.string_exp,0,len1+len2+2);
-		snprintf($$.string_exp,len1+len2+4, "%s,%s",$1.string_exp,$3.string_exp);
-		printf("\nPS : %s\n",$$.string_exp);
-		free($1.string_exp);
-		free($3.string_exp);
-		*/
+	int len1 = strlen($1.string_exp);
+	int len2 = strlen($3.string_exp);
+	$$.string_exp = malloc(len1+len2+2);
+	snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
+	free($1.string_exp);
+	free($3.string_exp);
+
 	}
 	;
 
@@ -289,7 +347,6 @@ init_declarator
 		$$.count_p  = $1.count_p; //TODO maybe 0
 		$$.count_m  = $1.count_m;
 
-		printf("\n--TEST------%s-----\n",$1.string_exp);
 		$$.string_exp = $1.string_exp;
 
 	}
@@ -310,8 +367,6 @@ init_declarator
 		snprintf($$.string_exp,len1+len2+2, "%s=%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
-		printf("\n--TEST2------%s-----\n",$$.string_exp);
-
 
 	}
 

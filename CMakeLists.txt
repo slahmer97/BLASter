@@ -28,5 +28,7 @@ target_link_libraries(optimizer rt pthread )
 target_compile_options(blaster PRIVATE  -Wall -Werror=implicit-function-declaration)
 target_compile_options(optimizer PRIVATE  -Wall -Werror=implicit-function-declaration)
 
-#TODO add testing exec
+#TODO add testing execs
+
+
 

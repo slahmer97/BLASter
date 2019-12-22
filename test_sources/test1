@@ -1,8 +1,19 @@
 {
-  int var[12];
-  int a;
-  a = 213;
-  var[12] = (1231230);
+  int a,c,d,i;
+
+  int zzz;
+  /*a = 213;
+  //var[12] = (1231230);*/
+  int x;
+   int t[10];
+   int count = 0;
+
+     x++;
+
+   for (count = 0;count<20;count++){
+      t[i] = 0;
+   }
+
 
 }
 
