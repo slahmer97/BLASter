@@ -10,9 +10,6 @@
 
      x++;
 
-   for (count = 0;count<20;count++){
-      t[i] = 0;
-   }
 
 
 }

@@ -68,6 +68,8 @@ struct global_data{
     char* code;
     sem_t * sem_prod_cons;
 
+    int finished;
+
 
 };
 
