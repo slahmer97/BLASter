@@ -3,7 +3,7 @@
 //
 
 #include <stdio.h>
-#include <symbol.h>
+#include "headers/symbol.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,16 +20,25 @@ struct shared_symbol* create_shared_symbol(char* name){
         perror("create_shared_symbol()");
         return (struct shared_symbol*)0;
     }
-    sem_t *sem_id = sem_open("Blaster_sem", O_CREAT, 0600, 0);
+
+    sem_t *sem_id = sem_open("Blaster_sem", O_CREAT, 0600,0);
     if (sem_id == SEM_FAILED){
-        perror("Parent  : [sem_open] Failed\n");
+        perror("Blaster_sem  : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
     }
     globalData.sem_symbol = sem_id;
+
+
+    sem_id = sem_open("Blaster_sem_prod_cons", O_CREAT, 0600, 0);
+    if (sem_id == SEM_FAILED){
+        perror("Blaster_sem_prod_cons  : [sem_open] Failed\n");
+        return (struct shared_symbol*)0;
+    }
+    globalData.sem_prod_cons = sem_id;
+
     ftruncate(shm_fd, sizeof(struct shared_symbol));
     struct shared_symbol* ret =(struct shared_symbol*)mmap(0,sizeof(struct shared_symbol), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     memset((void*)ret,0,sizeof(struct shared_symbol));
-    globalData.code = ret->code_space;
     return ret;
 }
 struct shared_symbol* subscribe_shared_symbol(char*name){
@@ -41,13 +50,17 @@ struct shared_symbol* subscribe_shared_symbol(char*name){
         perror("shm_open()");
         return (struct shared_symbol*)0;
     }
-    globalData.sem_symbol = sem_open("Blaster_sem", O_CREAT, 0600, 0);
+    globalData.sem_symbol = sem_open("Blaster_sem", O_CREAT, 0600);
     if (globalData.sem_symbol == SEM_FAILED){
         perror("Child   : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
     }
+    globalData.sem_prod_cons = sem_open("Blaster_sem_prod_cons", O_CREAT, 0600);
+    if (globalData.sem_prod_cons == SEM_FAILED){
+        perror("Child   : [sem_open] Failed\n");
+        return (struct shared_symbol*)0;
+    }
     struct shared_symbol* ret =(struct shared_symbol*)mmap(0, sizeof(struct shared_symbol), PROT_READ, MAP_SHARED, shm_fd, 0);
-    globalData.code = ret->code_space;
     return ret;
 }
 void destroy_shared_symbol(char* name, struct shared_symbol* ret){
@@ -58,17 +71,26 @@ void destroy_shared_symbol(char* name, struct shared_symbol* ret){
     shm_unlink(name);
 
     if (sem_close(globalData.sem_symbol) != 0){
-        perror("Parent  : [sem_close] Failed\n"); return;
+        perror("Blaster_sem  : [sem_close] Failed\n"); return;
+    }
+    if (sem_close(globalData.sem_prod_cons) != 0){
+        perror("Blaster_sem_prod_cons  : [sem_close] Failed\n"); return;
     }
     if (sem_unlink("Blaster_sem") < 0){
-        printf("Parent  : [sem_unlink] Failed\n"); return;
+        printf("Blaster_sem  : [sem_unlink] Failed\n"); return;
+    }
+    if (sem_unlink("Blaster_sem_prod_cons") < 0){
+        printf("Blaster_sem_prod_cons  : [sem_unlink] Failed\n"); return;
     }
     memset(&globalData,0,sizeof(struct global_data));
 }
-void unsubscribe_shared_symbol( struct shared_symbol* ret){
-    munmap((void*)ret, sizeof(struct shared_symbol));
+void unsubscribe_shared_symbol(){
+    munmap((void*)globalData.symbol, sizeof(struct shared_symbol));
     close(shm_fd);
     if (sem_close(globalData.sem_symbol) != 0){
+        perror("Parent  : [sem_close] Failed\n"); return;
+    }
+    if (sem_close(globalData.sem_prod_cons) != 0){
         perror("Parent  : [sem_close] Failed\n"); return;
     }
     memset(&globalData,0,sizeof(struct global_data));

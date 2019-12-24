@@ -5,8 +5,8 @@
 #ifndef BLASTER_SYMBOL_H
 #define BLASTER_SYMBOL_H
 #define IDLEN 50
-
-#include <uthash.h>
+#define OPTIMIZER_FILE "/tmp/OPTIMIZER.BLAST"
+#define OPTIMIZER_REQUEST "/tmp/OPTIMIZER_REQ.BLAST"
 #include <string.h>
 #include <fcntl.h>
 #include <sys/shm.h>
@@ -17,7 +17,6 @@
 typedef struct __symbol__ symbol;
 typedef symbol* symbol_p;
 struct global_data globalData;
-symbol_p tsymbol;
 
 #define VAR_SYM 999999
 #define VAR_ARR 999999
@@ -55,20 +54,18 @@ struct __symbol__ {
 #define CODE_LEN 100000
 struct shared_symbol{
     int count;
+    int optimized;
     symbol entries[N];
-
-    char code_space[CODE_LEN];
 };
 
 
 struct global_data{
     sem_t * sem_symbol;
     struct shared_symbol* symbol;
-
-    char* code;
     sem_t * sem_prod_cons;
 
     int finished;
+
 
 
 };
@@ -80,7 +77,7 @@ struct global_data{
 struct shared_symbol* create_shared_symbol(char* name);
 void destroy_shared_symbol(char*name,struct shared_symbol* ret);
 struct shared_symbol* subscribe_shared_symbol(char*name);
-void unsubscribe_shared_symbol( struct shared_symbol* ret);
+void unsubscribe_shared_symbol();
 
 
 /**

@@ -5,12 +5,11 @@
 #ifndef BLASTER_DEFS_H
 #define BLASTER_DEFS_H
 
-#include <symbol.h>
+#include "symbol.h"
 
 #define EXPR 88888
 
 int line_counter;
-
 
 int yyerror(const char *str);
 int yywrap(void);
