@@ -43,6 +43,8 @@
 //==================================START-EXTERNAL======================================================================
 translation_unit
 	: compound_statement {
+		FILE* d = fopen("../test_sources/res", "w");
+		fprintf(d,$1.string_exp);
 		printf("-->\n%s\n",$1.string_exp);
 	}
 	//| translation_unit compound_statement
