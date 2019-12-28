@@ -2,7 +2,7 @@
 	#include<stdio.h>
 	#include "headers/defs.h"
 	#include "headers/y.tab.h"
-
+	#include <stdlib.h>
 	int for_depth_counter_var = 0;
 	int direct_declarator_var = 0;
 	int current_type_var = -1;

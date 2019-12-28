@@ -2,7 +2,7 @@
 // Created by slahmer on 12/22/19.
 //
 #include <stdio.h>
-#include <defs.h>
+#include "../src/headers/defs.h"
 #include <assert.h>
 
 void scenario_name();
