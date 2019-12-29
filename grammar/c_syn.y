@@ -205,6 +205,7 @@ expression:
  	assignment_expression {
  		$$.string_exp = $1.string_exp;
  		//printf("\n---------TEST145--- |%s|\n",$$.string_exp );
+		ast_print($1._ast,0);
  	}
 	| expression ',' assignment_expression {
 
@@ -219,6 +220,7 @@ expression:
 postfix_expression
 	: primary_expression {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 		//ast_print($1._ast,1);
 	}
 	| postfix_expression '[' expression ']' {
@@ -261,7 +263,6 @@ unary_expression
 		$$.string_exp = $1.string_exp;
 
 		$$._ast = $1._ast;
-		ast_print($1._ast,0);
 	}
 	| INC unary_expression {
 		int len2 = strlen($2.string_exp);
@@ -284,6 +285,7 @@ unary_expression
 multiplicative_expression
 	: unary_expression {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 	}
 	| multiplicative_expression '*' unary_expression {
 
@@ -295,6 +297,7 @@ multiplicative_expression
 		free($1.string_exp);
 		free($3.string_exp);
 
+		$$._ast = ast_new_operation(AST_MUL,$1._ast,$3._ast);
 	}
 	| multiplicative_expression '/' unary_expression {
 
@@ -305,6 +308,7 @@ multiplicative_expression
 			free($1.string_exp);
 			free($3.string_exp);
 
+			$$._ast = ast_new_operation(AST_DIV,$1._ast,$3._ast);
 	}
 	| multiplicative_expression '%' unary_expression {
 
@@ -315,12 +319,15 @@ multiplicative_expression
 			free($1.string_exp);
 			free($3.string_exp);
 
+			$$._ast = ast_new_operation(AST_MOD,$1._ast,$3._ast);
+
 	}
 	;
 additive_expression
 	: multiplicative_expression {
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 	}
 	| additive_expression '+' multiplicative_expression {
 
@@ -330,6 +337,9 @@ additive_expression
 		snprintf($$.string_exp,len1+len2+2, "%s+%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_ADD,$1._ast,$3._ast);
+
 	}
 	| additive_expression '-' multiplicative_expression {
 
@@ -339,12 +349,17 @@ additive_expression
 		snprintf($$.string_exp,len1+len2+2, "%s-%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_SUB,$1._ast,$3._ast);
+
 	}
 	;
 shift_expression
 	: additive_expression {
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| shift_expression LEFT_OP additive_expression {
 		int len1 = strlen($1.string_exp);
@@ -353,6 +368,9 @@ shift_expression
 		snprintf($$.string_exp,len1+len2+3, "%s<<%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_LEFT_OP,$1._ast,$3._ast);
+
 	}
 	| shift_expression RIGHT_OP additive_expression {
 		int len1 = strlen($1.string_exp);
@@ -361,12 +379,17 @@ shift_expression
 		snprintf($$.string_exp,len1+len2+3, "%s>>%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+
+		$$._ast = ast_new_operation(AST_RIGHT_OP,$1._ast,$3._ast);
 	}
 	;
 relational_expression
 	: shift_expression{
 
 		$$.string_exp = $1.string_exp;
+				$$._ast = $1._ast;
+
 	}
 	| relational_expression '<' shift_expression {
 		int len1 = strlen($1.string_exp);
@@ -375,6 +398,7 @@ relational_expression
 		snprintf($$.string_exp,len1+len2+2, "%s<%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_LOWER,$1._ast,$3._ast);
 	}
 	| relational_expression '>' shift_expression {
 		int len1 = strlen($1.string_exp);
@@ -383,6 +407,7 @@ relational_expression
 		snprintf($$.string_exp,len1+len2+2, "%s>%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_GREATER,$1._ast,$3._ast);
 	}
 	| relational_expression LE_OP shift_expression{
 		int len1 = strlen($1.string_exp);
@@ -391,6 +416,8 @@ relational_expression
 		snprintf($$.string_exp,len1+len2+3, "%s<=%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_LOWER_EQUAL,$1._ast,$3._ast);
+
 	}
 	| relational_expression GE_OP shift_expression {
 		int len1 = strlen($1.string_exp);
@@ -399,12 +426,15 @@ relational_expression
 		snprintf($$.string_exp,len1+len2+3, "%s>=%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_GREATER_EQUAL,$1._ast,$3._ast);
 	}
 	;
 equality_expression
 	: relational_expression{
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| equality_expression EQ_OP relational_expression {
 		int len1 = strlen($1.string_exp);
@@ -413,6 +443,9 @@ equality_expression
 		snprintf($$.string_exp,len1+len2+3, "%s==%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_EQUAL,$1._ast,$3._ast);
+
 	}
 	| equality_expression NE_OP relational_expression {
 		int len1 = strlen($1.string_exp);
@@ -421,12 +454,14 @@ equality_expression
 		snprintf($$.string_exp,len1+len2+3, "%s!=%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_NOT_EQUAL,$1._ast,$3._ast);
 	}
 	;
 and_expression
 	: equality_expression {
-
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| and_expression '&' equality_expression {
 		int len1 = strlen($1.string_exp);
@@ -435,12 +470,16 @@ and_expression
 		snprintf($$.string_exp,len1+len2+2, "%s&%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_AND,$1._ast,$3._ast);
 	}
 	;
 exclusive_or_expression
 	: and_expression{
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| exclusive_or_expression '^' and_expression {
 		int len1 = strlen($1.string_exp);
@@ -449,12 +488,15 @@ exclusive_or_expression
 		snprintf($$.string_exp,len1+len2+2, "%s^%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_EOR,$1._ast,$3._ast);
 	}
 	;
 inclusive_or_expression
 	: exclusive_or_expression {
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| inclusive_or_expression '|' exclusive_or_expression {
 		int len1 = strlen($1.string_exp);
@@ -463,12 +505,15 @@ inclusive_or_expression
 		snprintf($$.string_exp,len1+len2+2, "%s|%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_IOR,$1._ast,$3._ast);
 	}
 	;
 logical_and_expression
 	: inclusive_or_expression {
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| logical_and_expression AND_OP inclusive_or_expression {
 		int len1 = strlen($1.string_exp);
@@ -477,12 +522,16 @@ logical_and_expression
 		snprintf($$.string_exp,len1+len2+3, "%s&&%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_AND_OP,$1._ast,$3._ast);
 	}
 	;
 logical_or_expression
 	: logical_and_expression {
 
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+
 	}
 	| logical_or_expression OR_OP logical_and_expression {
 		int len1 = strlen($1.string_exp);
@@ -491,6 +540,7 @@ logical_or_expression
 		snprintf($$.string_exp,len1+len2+3, "%s||%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_OR_OP,$1._ast,$3._ast);
 	}
 	;
 //TODO add conditional assignement
@@ -498,6 +548,8 @@ logical_or_expression
 assignment_expression :
 	logical_and_expression {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
+		//ast_print($1._ast,1);
 	}
 	| unary_expression assignment_operator assignment_expression {
 		int len1 = strlen($1.string_exp);
@@ -507,6 +559,9 @@ assignment_expression :
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
+
+
 	}
 	;
 assignment_operator

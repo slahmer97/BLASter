@@ -48,17 +48,31 @@ void ast_free(ast* ast) {
             free(ast->id);
             break;
         case AST_ADD:
+        case AST_SUB:
+        case AST_MUL:
+        case AST_DIV:
+        case AST_MOD:
+        case AST_FLOAT:
+        case AST_LEFT_OP:
+        case AST_RIGHT_OP:
+        case AST_LOWER_EQUAL:
+        case AST_GREATER_EQUAL:
+        case AST_GREATER:
+        case AST_LOWER:
+        case AST_NOT_EQUAL:
+        case AST_EQUAL:
+        case AST_AND:
+        case AST_EOR:
+        case AST_IOR:
+        case AST_AND_OP:
+        case AST_OR_OP:
             ast_free(ast->left);
             ast_free(ast->right);
             break;
-        case AST_MUL:
         case AST_LIST:
             ast_free(ast->left);
             ast_free(ast->right);
             break;
-        case AST_FLOAT:
-            break;
-
         case AST_ARR_ACCESS:
             break;
         case AST_FUNC_CALL:
@@ -66,6 +80,10 @@ void ast_free(ast* ast) {
         case AST_INC:
             break;
         case AST_DEC:
+            break;
+
+
+        case AST_ASSIGN:
             break;
     }
     free(ast);
@@ -79,7 +97,7 @@ void ast_print(ast* ast, int indent) {
             printf("ID (%s)\n", ast->id);
             break;
         case AST_NUMBER:
-            printf("NUMBER_I (%d)\n", ast->i_number);
+            printf("NUM_I (%d)\n", ast->i_number);
             break;
         case AST_ADD:
             printf("+\n");
@@ -91,7 +109,7 @@ void ast_print(ast* ast, int indent) {
             ast_print(ast->left, indent + 1);
             ast_print(ast->right, indent + 1);
         case AST_FLOAT:
-            printf("NUMBER_F (%f)\n", ast->f_number);
+            printf("NUM_F (%f)\n", ast->f_number);
             break;
         case AST_LIST:
             printf(",\n");
@@ -120,6 +138,92 @@ void ast_print(ast* ast, int indent) {
                 ast_print(ast->right, indent + 1);
             else
                 ast_print(ast->left, indent + 1);
+            break;
+        case AST_DIV:
+            printf("/\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_MOD:
+            printf("%%\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_SUB:
+            printf("-\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_LEFT_OP:
+            printf("<<\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_RIGHT_OP:
+            printf(">>\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_LOWER_EQUAL:
+            printf("<=\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_GREATER_EQUAL:
+            printf("<=\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_GREATER:
+            printf(">\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_LOWER:
+            printf("<\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_NOT_EQUAL:
+            printf("!=\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_EQUAL:
+            printf("==\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_AND:
+            printf("&\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_EOR:
+            printf("|\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_IOR:
+            printf("^\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_AND_OP:
+            printf("&&\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_OR_OP:
+            printf("||\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_ASSIGN:
+            printf("=\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
             break;
     };
 }

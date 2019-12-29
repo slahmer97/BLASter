@@ -20,10 +20,6 @@ int main(int argc,char**argv) {
 
 
     globalData.finished = 1;
-    sem_post(globalData.sem_prod_cons);
-    sleep(2);
-    sem_post(globalData.sem_prod_cons);
-    sleep(2);
     destroy_shared_symbol("Blaster",globalData.symbol);
 
 

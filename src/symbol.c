@@ -21,7 +21,7 @@ struct shared_symbol* create_shared_symbol(char* name){
         return (struct shared_symbol*)0;
     }
 
-    sem_t *sem_id = sem_open("Blaster_sem", O_CREAT, 0600,0);
+    sem_t *sem_id = sem_open("Blaster_sem", O_CREAT, 0666,0);
     if (sem_id == SEM_FAILED){
         perror("Blaster_sem  : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
@@ -29,7 +29,7 @@ struct shared_symbol* create_shared_symbol(char* name){
     globalData.sem_symbol = sem_id;
 
 
-    sem_id = sem_open("Blaster_sem_prod_cons", O_CREAT, 0600, 0);
+    sem_id = sem_open("Blaster_sem_prod_cons", O_CREAT, 0666, 0);
     if (sem_id == SEM_FAILED){
         perror("Blaster_sem_prod_cons  : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
@@ -42,7 +42,7 @@ struct shared_symbol* create_shared_symbol(char* name){
     return ret;
 }
 struct shared_symbol* subscribe_shared_symbol(char*name){
-    shm_fd = shm_open(name, O_RDONLY, 0666);
+    shm_fd = shm_open(name, O_RDWR, 0666);
     printf("shm_fd : %d\n",shm_fd);
 
 
@@ -50,22 +50,22 @@ struct shared_symbol* subscribe_shared_symbol(char*name){
         perror("shm_open()");
         return (struct shared_symbol*)0;
     }
-    globalData.sem_symbol = sem_open("Blaster_sem", O_CREAT, 0600);
+    globalData.sem_symbol = sem_open("Blaster_sem", O_CREAT, 0666);
     if (globalData.sem_symbol == SEM_FAILED){
         perror("Child   : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
     }
-    globalData.sem_prod_cons = sem_open("Blaster_sem_prod_cons", O_CREAT, 0600);
+    globalData.sem_prod_cons = sem_open("Blaster_sem_prod_cons", O_CREAT, 0666);
     if (globalData.sem_prod_cons == SEM_FAILED){
         perror("Child   : [sem_open] Failed\n");
         return (struct shared_symbol*)0;
     }
-    struct shared_symbol* ret =(struct shared_symbol*)mmap(0, sizeof(struct shared_symbol), PROT_READ, MAP_SHARED, shm_fd, 0);
+    struct shared_symbol* ret =(struct shared_symbol*)mmap(0, sizeof(struct shared_symbol), PROT_WRITE|PROT_READ, MAP_SHARED, shm_fd, 0);
     return ret;
 }
 void destroy_shared_symbol(char* name, struct shared_symbol* ret){
     if(ret != 0)
-         munmap((void*)ret, sizeof(struct shared_symbol));
+        munmap((void*)ret, sizeof(struct shared_symbol));
     if(shm_fd > 0)
         close(shm_fd);
     shm_unlink(name);
