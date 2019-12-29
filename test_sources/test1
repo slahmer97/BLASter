@@ -1,28 +1,9 @@
 {
-  int a;
-   int b;
-   b++;
-   /*
-   for(a = 0;a<10;a++){
-        int z = 0;
-   }
-*/
-/*  int d;
-  int b[20][20];
-  int j;
+  int a,b,c,d;
+  float z=12.23*123+23;
+  a = 213,c=123;
 
-    for(a = 0;a<20;a = a + 1){
-        if(a == 5){
-           for(j = 0;j<20;j = j+1){
-                            b = 0;
-           }
-        }
-        else {
-           for(j = 0;j<20;j = j+1){
-                                    b = 0;
-                   }
-        }
+}
+{
 
-    }
-*/
 }

@@ -2,6 +2,8 @@
 	#include<stdio.h>
 	#include "headers/defs.h"
 	#include "headers/y.tab.h"
+	#include "headers/ast.h"
+
 	#include <stdlib.h>
 	int for_depth_counter_var = 0;
 	int direct_declarator_var = 0;
@@ -20,7 +22,7 @@
 		char* string_val;
 		int type_counter;
 
-
+		struct ast* _ast;
 		char * string_exp;
 	}vv;
 
@@ -36,18 +38,29 @@
 %type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
 %type <vv> selection_statement pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
 %type <vv> iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
-%type <vv> expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
-%start translation_unit
+%type <vv> translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
+%start start
 %%
 
 //==================================START-EXTERNAL======================================================================
-translation_unit
-	: compound_statement {
+start : translation_unit {
+		printf("-->\n%s\n",$1.string_exp);
 		FILE* d = fopen("../test_sources/res", "w");
 		fprintf(d,$1.string_exp);
-		printf("-->\n%s\n",$1.string_exp);
+		free($1.string_exp);
+}
+translation_unit
+	: compound_statement {
+		$$.string_exp = $1.string_exp;
 	}
-	//| translation_unit compound_statement
+	| translation_unit compound_statement {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+	}
 	;
 compound_statement
 	: '{' '}' {
@@ -201,13 +214,12 @@ expression:
 		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
-		//printf("\n---------TEST145+1--- |%s|\n",$$.string_exp );
 	}
 	;
 postfix_expression
 	: primary_expression {
 		$$.string_exp = $1.string_exp;
-		//printf("\n---TEST1-%s------------\n",$$.string_exp);
+		//ast_print($1._ast,1);
 	}
 	| postfix_expression '[' expression ']' {
 		int len1 = strlen($1.string_exp);
@@ -216,48 +228,62 @@ postfix_expression
 		snprintf($$.string_exp,len1+len2+3, "%s[%s]",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = 0;//ast_new_operation(AST_ARR_ACCESS,$1._ast,$3._ast);
 	}
 	| postfix_expression '(' ')' {
 		int len1 = strlen($1.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "%s()",$1.string_exp);
 		free($1.string_exp);
+
+		$$._ast = ast_new_operation(AST_FUNC_CALL,$1._ast,0);
 	}
 	| postfix_expression INC {
 		int len1 = strlen($1.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "%s++",$1.string_exp);
 		free($1.string_exp);
+
+		$$._ast = ast_new_operation(AST_INC,$1._ast,0);
 	}
 	| postfix_expression DEC {
 		int len1 = strlen($1.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "%s--",$1.string_exp);
 		free($1.string_exp);
+
+		$$._ast = ast_new_operation(AST_DEC,$1._ast,0);
 	}
 
 unary_expression
 	: postfix_expression {
 		$$.string_exp = $1.string_exp;
-		//printf("\n--------TEST999----| %s |----\n",$$.string_exp);
+
+		$$._ast = $1._ast;
+		ast_print($1._ast,0);
 	}
 	| INC unary_expression {
 		int len2 = strlen($2.string_exp);
 		$$.string_exp = malloc(len2+3);
 		snprintf($$.string_exp,len2+3, "++%s",$2.string_exp);
 		free($2.string_exp);
+
+		$$._ast = ast_new_operation(AST_INC,0,$2._ast);
+
 	}
 	| DEC unary_expression {
 		int len2 = strlen($2.string_exp);
 		$$.string_exp = malloc(len2+3);
 		snprintf($$.string_exp,len2+3, "--%s",$2.string_exp);
 		free($2.string_exp);
+
+		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
 	}
 	;
 multiplicative_expression
 	: unary_expression {
 		$$.string_exp = $1.string_exp;
-		//printf("\n---TEST10---%s\n",$$.string_exp);
 	}
 	| multiplicative_expression '*' unary_expression {
 
@@ -477,9 +503,7 @@ assignment_expression :
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_exp);
 		$$.string_exp = malloc(len1+len2+2);
-		//printf("\n-------TEST88--- |%s| |%s| \n",$1.string_exp,$3.string_exp);
 		snprintf($$.string_exp,len1+len2+2, "%s=%s",$1.string_exp,$3.string_exp);
-		//printf("\n-------TEST88+1--- |%s| \n",$$.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
@@ -496,7 +520,6 @@ assignment_operator
 declaration_list
 	: declaration {
 		$$.string_exp = $1.string_exp;
-		//printf("\n===============\n%s\n================\n",$1.string_exp);
 	}
 	| declaration_list declaration {
 
@@ -515,7 +538,6 @@ declaration :
 	//: declaration_specifiers ';' // long; or int;
 	//we have type in declaration_specifiers
 	// check if declaration_specifier type fits into all items of init_declarator_list
-	//{ printf("After type : %d",current_type_var);}
 	declaration_specifiers init_declarator_list ';' {
 		//restore the current type variable to -1
 		 current_type_var = -1;
@@ -541,7 +563,6 @@ declaration_specifiers
 		 //store the current type in a global variable....TODO
 		 //TODO check composed types=====!
 		 current_type_var = $1.type;
-		 printf("current type : %d",current_type_var);
 
 		 $$.string_exp = $1.string_exp;
 	}
@@ -553,7 +574,6 @@ declaration_specifiers
 type_specifier
 	: VOID {
 		$$.type = VOID;
-		//printf("TYPE : %d",$$);
 
 		$$.string_exp = malloc(5);
 		snprintf($$.string_exp,5, "void");
@@ -561,15 +581,12 @@ type_specifier
 	}
 	| INT  {
 		$$.type = INT;
-		//printf("TYPE : %d",$$);
 
 		$$.string_exp = malloc(4);
 		snprintf($$.string_exp,4, "int");
 	}
 	| FLOAT {
 		$$.type = FLOAT;
-		printf("TYPE : %d",$$);
-
 		$$.string_exp = malloc(6);
 		snprintf($$.string_exp,6, "float");
 	}
@@ -643,7 +660,6 @@ init_declarator
 //DONE
 declarator
 	: pointer direct_declarator {
-		//printf("SIZE(%d) ",$1+$2);
 		for(int l = 0;l<4;l++)
 			$$.t[l] = $2.t[l];
 		$$.sentry = $2.sentry;
@@ -670,7 +686,6 @@ declarator
 		$$.sentry = $1.sentry;
 		$$.count_p  = $1.count_p; //TODO maybe 0
 		$$.count_m  = $1.count_m;
-		//printf("SIZE(%d) ",$1);
 	//COPY
 		$$.string_exp = $1.string_exp;
 
@@ -690,7 +705,8 @@ direct_declarator
 		char * curr_var_name_tmp = $1.string_val;
 		if(current_type_var != -1){
 		    symbol_p tttt;
-		    int rep = lookup_symbol_entry(curr_var_name_tmp,&tttt);
+	   	     // int rep = lookup_symbol_entry(curr_var_name_tmp,&tttt);
+		    lookup_symbol_entry(curr_var_name_tmp,&tttt);
 		    if(tttt->is_dec == 1){
 			printf("error : Redeclaration of variable %s\tat line : %d\n",curr_var_name_tmp,line_counter+1);
 			return -1;
@@ -704,10 +720,6 @@ direct_declarator
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
 	}
-        //| direct_declarator '[' ']' {
-        // 	$$.count_p = $1.count_p +1;
-       // 	// TODO maybe add the array size
-        //}
         | direct_declarator '[' CONST_INT ']' {
          	//$$ = $1 +1;
         	$$.t[direct_declarator_var] = $3.val;
@@ -748,11 +760,11 @@ pointer
 	| '*' pointer {
 	 	$$.count_p = $2.count_p +1;
 
-
 	 	int len1 = strlen($2.string_exp);
 	 	$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3,"*%s",$2.string_exp);
 		free($2.string_exp);
+
 
 	}
 	;
@@ -761,7 +773,6 @@ pointer
 initializer
 	: assignment_expression {
 	 	$$.string_exp = $1.string_exp;
-		//snprintf($$.string_exp,8, "ass_exp");
 
 	}
 	| '{' initializer_list '}' {
@@ -787,7 +798,7 @@ initializer_list
 	}
 	;
 
-//DONE
+//DONE,DONE
 primary_expression
 	: IDENTIFIER {
 		$$.type = IDENTIFIER;
@@ -808,6 +819,9 @@ primary_expression
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
+		$$._ast = ast_new_id(curr_var_name_tmp);
+
+
 	}
 	| CONST_INT {
 		$$.type = CONST_INT;
@@ -818,18 +832,21 @@ primary_expression
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
+		int a = atoi(curr_var_name_tmp);
+		$$._ast = ast_new_number(a);
+
 	}
 	| CONST_FLOAT {
 		$$.type = CONST_FLOAT;
-
 		char * curr_var_name_tmp = $1.string_val;
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
+
+		float a = strtof(curr_var_name_tmp, NULL);
+		$$._ast = ast_new_float(a);
+
 	}
-	//| STRING {
-	//TODO Not implemented yet
-	//}
 	| '(' expression ')' {
 
 		$$.type = EXPR;
@@ -838,19 +855,23 @@ primary_expression
 		$$.string_exp = malloc(len+3);
 		snprintf($$.string_exp,len+4, "(%s)",$2.string_exp);
 		free($2.string_exp);
-		//printf("\n---------TEST766------ | %s |---------\n",$$.string_exp);
+
+		$$._ast = $2._ast;
 
 	}
 	;
 
 
-//DONE
+//DONE,DONE
 identifier_list
 	: IDENTIFIER {
 		char * curr_var_name_tmp = $1.string_val;
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len);
 		memcpy($$.string_exp,curr_var_name_tmp,len);
+
+		$$._ast = ast_new_id(curr_var_name_tmp);
+
 	}
 	| identifier_list ',' IDENTIFIER {
 
@@ -860,6 +881,8 @@ identifier_list
 		$$.string_exp = malloc(len+len2+1);
 		snprintf($$.string_exp,len+len2+1,"%s,%s",$1.string_exp,curr_var_name_tmp);
 		free($1.string_exp);
+
+		$$._ast = ast_new_operation(AST_LIST,$1._ast,ast_new_id(curr_var_name_tmp)) ;
 	}
 	;
 %%

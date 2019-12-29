@@ -6,7 +6,7 @@
 #define BLASTER_DEFS_H
 
 #include "symbol.h"
-
+#include "ast.h"
 #define EXPR 88888
 
 int line_counter;

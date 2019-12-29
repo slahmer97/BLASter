@@ -1,4 +1,5 @@
 {
-int a; int b;
-b++;
+int a,b,c,d; float z=12.23*123+23;
+a=213,c=123;
 }
+{ }
