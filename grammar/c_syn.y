@@ -73,7 +73,7 @@ compound_statement
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
 		free($2.string_exp);
-		ast_print($2._ast,0);
+		//ast_print($2._ast,0);
 
 	  	 //$$._ast = $2._ast;
 
@@ -101,7 +101,7 @@ compound_statement
 
 		//ast_print($2._ast,0);
 		printf("---------------------------\n");
-		ast_print($3._ast,0);
+		//ast_print($3._ast,0);
 
 
 	}

@@ -1,4 +1,6 @@
 {
-int a=2; int b=123; float az=123.23; int t[12][23][34][234];
-az=123*23+t[0][1][12][12];
+int t[80][100],b[4][2][2]; float a=4.3; float c=2.2; int i=0; float sum=0.4;
+sum=a+c;
+for(i=0; i<10; i++)
+{t[1][2]=0;}
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <zconf.h>
+#include <stdlib.h>
 #include "headers/defs.h"
 
 extern FILE *yyin, *yyout;
@@ -8,6 +9,7 @@ int main(int argc,char**argv) {
     char* file_in;
     file_in = argv[1];
     file_out = argv[2];
+    int show = atoi(argv[3]);
 
     globalData.symbol = create_shared_symbol("Blaster");
     globalData.finished = 0;
@@ -21,7 +23,8 @@ int main(int argc,char**argv) {
     printf("\n[+] Ret : %d",ret);
     //display_symbol_table();
 
-
+    if(show == 10)
+        display_symbol_table();
 
     globalData.finished = 1;
     destroy_shared_symbol("Blaster",globalData.symbol);
