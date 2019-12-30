@@ -46,7 +46,7 @@
 //==================================START-EXTERNAL======================================================================
 start : translation_unit {
 		printf("-->\n%s\n",$1.string_exp);
-		FILE* d = fopen("../test_sources/res", "w");
+		FILE* d = fopen(file_out, "w");
 		fprintf(d,$1.string_exp);
 		free($1.string_exp);
 }

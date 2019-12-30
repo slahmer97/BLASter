@@ -3,13 +3,17 @@
 #include "headers/defs.h"
 
 extern FILE *yyin, *yyout;
-
+extern char* file_out;
 int main(int argc,char**argv) {
+    char* file_in;
+    file_in = argv[1];
+    file_out = argv[2];
+
     globalData.symbol = create_shared_symbol("Blaster");
     globalData.finished = 0;
     globalData.symbol->optimized = -1;
     line_counter = 0;
-    yyin = fopen("../test_sources/test1", "r");
+    yyin = fopen(file_in, "r");
     //yyout = fopen("../test_sources/res", "w");
 
     line_counter = 0;

@@ -10,6 +10,8 @@
 #define EXPR 88888
 
 int line_counter;
+char* file_out;
+
 
 int yyerror(const char *str);
 int yywrap(void);
