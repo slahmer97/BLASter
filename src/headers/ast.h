@@ -20,14 +20,11 @@ typedef struct ast {
             struct ast* left;
             struct ast* right;
         };
-        struct {
-            struct ast* unary_ast;
-        };
+
     };
 } ast;
 
 ast* ast_new_operation(ast_type, ast*, ast*);
-ast* ast_new_unary_operation(ast_type type, ast* op);
 ast* ast_new_number(int);
 ast* ast_new_float(float);
 ast* ast_new_id(char*);

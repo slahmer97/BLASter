@@ -204,8 +204,7 @@ iter_counter : {for_depth_counter_var++;}
 expression:
  	assignment_expression {
  		$$.string_exp = $1.string_exp;
- 		//printf("\n---------TEST145--- |%s|\n",$$.string_exp );
-		ast_print($1._ast,0);
+ 		printf("\n---------TEST145--- |%s|\n",$$.string_exp );
  	}
 	| expression ',' assignment_expression {
 
@@ -221,7 +220,6 @@ postfix_expression
 	: primary_expression {
 		$$.string_exp = $1.string_exp;
 		$$._ast = $1._ast;
-		//ast_print($1._ast,1);
 	}
 	| postfix_expression '[' expression ']' {
 		int len1 = strlen($1.string_exp);
@@ -231,7 +229,7 @@ postfix_expression
 		free($1.string_exp);
 		free($3.string_exp);
 
-		$$._ast = 0;//ast_new_operation(AST_ARR_ACCESS,$1._ast,$3._ast);
+		ast_new_operation(AST_ARR_ACCESS,$1._ast,$3._ast);
 	}
 	| postfix_expression '(' ')' {
 		int len1 = strlen($1.string_exp);
@@ -261,7 +259,6 @@ postfix_expression
 unary_expression
 	: postfix_expression {
 		$$.string_exp = $1.string_exp;
-
 		$$._ast = $1._ast;
 	}
 	| INC unary_expression {
@@ -269,7 +266,6 @@ unary_expression
 		$$.string_exp = malloc(len2+3);
 		snprintf($$.string_exp,len2+3, "++%s",$2.string_exp);
 		free($2.string_exp);
-
 		$$._ast = ast_new_operation(AST_INC,0,$2._ast);
 
 	}
@@ -278,7 +274,6 @@ unary_expression
 		$$.string_exp = malloc(len2+3);
 		snprintf($$.string_exp,len2+3, "--%s",$2.string_exp);
 		free($2.string_exp);
-
 		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
 	}
 	;
@@ -298,28 +293,30 @@ multiplicative_expression
 		free($3.string_exp);
 
 		$$._ast = ast_new_operation(AST_MUL,$1._ast,$3._ast);
+
 	}
 	| multiplicative_expression '/' unary_expression {
 
-			int len1 = strlen($1.string_exp);
-			int len2 = strlen($3.string_exp);
-			$$.string_exp = malloc(len1+len2+2);
-			snprintf($$.string_exp,len1+len2+2, "%s/%s",$1.string_exp,$3.string_exp);
-			free($1.string_exp);
-			free($3.string_exp);
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s/%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
 
-			$$._ast = ast_new_operation(AST_DIV,$1._ast,$3._ast);
+		$$._ast = ast_new_operation(AST_DIV,$1._ast,$3._ast);
 	}
 	| multiplicative_expression '%' unary_expression {
 
-			int len1 = strlen($1.string_exp);
-			int len2 = strlen($3.string_exp);
-			$$.string_exp = malloc(len1+len2+4);
-			snprintf($$.string_exp,len1+len2+4, "%s%%%s",$1.string_exp,$3.string_exp);
-			free($1.string_exp);
-			free($3.string_exp);
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+4);
+		snprintf($$.string_exp,len1+len2+4, "%s%%%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
 
-			$$._ast = ast_new_operation(AST_MOD,$1._ast,$3._ast);
+		$$._ast = ast_new_operation(AST_MOD,$1._ast,$3._ast);
+
 
 	}
 	;
@@ -388,7 +385,7 @@ relational_expression
 	: shift_expression{
 
 		$$.string_exp = $1.string_exp;
-				$$._ast = $1._ast;
+		$$._ast = $1._ast;
 
 	}
 	| relational_expression '<' shift_expression {
@@ -546,10 +543,11 @@ logical_or_expression
 //TODO add conditional assignement
 
 assignment_expression :
-	logical_and_expression {
+	logical_or_expression {
 		$$.string_exp = $1.string_exp;
 		$$._ast = $1._ast;
-		//ast_print($1._ast,1);
+		ast_print($$._ast,1);
+
 	}
 	| unary_expression assignment_operator assignment_expression {
 		int len1 = strlen($1.string_exp);
@@ -559,7 +557,8 @@ assignment_expression :
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
-		$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
+
+		//$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
 
 
 	}
@@ -874,6 +873,7 @@ primary_expression
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
+		//printf("CONST_INT : %s\n",curr_var_name_tmp);
 		$$._ast = ast_new_id(curr_var_name_tmp);
 
 
@@ -887,7 +887,9 @@ primary_expression
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
+
 		int a = atoi(curr_var_name_tmp);
+		//printf("CONST_INT : %d\n",a);
 		$$._ast = ast_new_number(a);
 
 	}
@@ -897,8 +899,9 @@ primary_expression
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
-
 		float a = strtof(curr_var_name_tmp, NULL);
+
+		//printf("CONST_FLOAT : %f\n",a);
 		$$._ast = ast_new_float(a);
 
 	}

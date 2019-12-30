@@ -14,13 +14,6 @@ ast* ast_new_operation(ast_type type, ast* left, ast* right) {
     new->right = right;
     return new;
 }
-ast* ast_new_unary_operation(ast_type type, ast* op) {
-    ast* new = malloc(sizeof(ast));
-    new->type = type;
-    new->unary_ast = op;
-    return new;
-}
-
 ast* ast_new_number(int number) {
     ast* new = malloc(sizeof(ast));
     new->type = AST_NUMBER;
@@ -108,7 +101,12 @@ void ast_print(ast* ast, int indent) {
             printf("*\n");
             ast_print(ast->left, indent + 1);
             ast_print(ast->right, indent + 1);
+            break;
         case AST_FLOAT:
+            if( ast->f_number <= 0.000001){
+                printf("ADDR : %p\n",ast);
+                printf("HERE\n");
+            }
             printf("NUM_F (%f)\n", ast->f_number);
             break;
         case AST_LIST:
@@ -223,7 +221,6 @@ void ast_print(ast* ast, int indent) {
             printf("=\n");
             ast_print(ast->left, indent + 1);
             ast_print(ast->right, indent + 1);
-            break;
             break;
     };
 }
