@@ -6,6 +6,6 @@
     int b = 2;
     int c = 213;
     for (i=0;i<=10;i++){
-        t[i] = z[b];
+        t[i] = z[i];
     }
  }

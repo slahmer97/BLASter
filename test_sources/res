@@ -1,5 +1,5 @@
 {
 int t[80]; int z[80]; int i; int a=0; int b=2; int c=213;
 for(i=0; i<=10; i++)
-{t[i]=z[b];}
+{t[i]=z[i];}
 }
