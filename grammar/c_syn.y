@@ -28,7 +28,7 @@
 
 }
 
-%token FOR WHILE DO IF ELSE RETURN
+%token FOR WHILE DO IF ELSE RETURN BREAK GOTO
 %token INT VOID FLOAT
 %token CONST_Q //type qualifier  const int...
 %token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST
@@ -37,8 +37,8 @@
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP INC DEC LEFT_OP RIGHT_OP
 %type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
 %type <vv> selection_statement pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
-%type <vv> iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
-%type <vv> translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
+%type <vv> jump_statement iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
+%type <vv> parameter_declaration parameter_list external_declaration function_definition translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
 //%type <vv> un_op
 %start start
 %%
@@ -51,15 +51,88 @@ start : translation_unit {
 		free($1.string_exp);
 }
 translation_unit
-	: compound_statement {
+	: external_declaration {
 		$$.string_exp = $1.string_exp;
 	}
-	| translation_unit compound_statement {
+	| translation_unit external_declaration {
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($2.string_exp);
 		$$.string_exp = malloc(len1+len2+2);
 		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
 		free($1.string_exp);
+		free($2.string_exp);
+	}
+	;
+
+external_declaration
+	: function_definition {
+			$$.string_exp = $1.string_exp;
+	}
+	| declaration {
+		$$.string_exp = $1.string_exp;
+	}
+	;
+function_definition
+	: declaration_specifiers declarator declaration_list compound_statement {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		int len3 = strlen($3.string_exp);
+		int len4 = strlen($4.string_exp);
+		$$.string_exp = malloc(len1+len2+len3+len4+4);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp,$4.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+		free($3.string_exp);
+		free($4.string_exp);
+	}
+	| declaration_specifiers declarator compound_statement {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		int len3 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+len3+3);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+		free($3.string_exp);
+	}
+	| declarator declaration_list compound_statement {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		int len3 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+len3+3);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+		free($3.string_exp);
+	}
+	| declarator compound_statement {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+	}
+	;
+
+jump_statement
+	: GOTO IDENTIFIER ';' {
+		int len1 = strlen($2.string_val);
+		$$.string_exp = malloc(len1+8);
+		snprintf($$.string_exp,len1+8, "goto %s ;",$2.string_val);
+	}
+	| BREAK ';' {
+		$$.string_exp = malloc(7);
+		snprintf($$.string_exp,7, "break;");
+	}
+	| RETURN ';' {
+		$$.string_exp = malloc(8);
+		snprintf($$.string_exp,8, "return;");
+	}
+	| RETURN expression ';' {
+		int len1 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+10);
+		snprintf($$.string_exp,len1+10, "return %s ;",$2.string_exp);
 		free($2.string_exp);
 	}
 	;
@@ -123,11 +196,7 @@ statement_list
 		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
-
 		$$._ast = ast_new_operation(AST_STATE_LIST,$1._ast,$2._ast);
-
-
-
 	}
 statement
 	: //labeled_statement
@@ -146,6 +215,9 @@ statement
 		$$.string_exp = $1.string_exp;
 	}
 	| iteration_statement {
+		$$.string_exp = $1.string_exp;
+	}
+	| jump_statement{
 		$$.string_exp = $1.string_exp;
 	}
 	;
@@ -698,6 +770,7 @@ type_specifier
 		$$.string_exp = malloc(6);
 		snprintf($$.string_exp,6, "float");
 	}
+
 	;
 //DONE
 init_declarator_list
@@ -821,6 +894,7 @@ direct_declarator
 		if(current_type_var != -1){
 		    symbol_p tttt;
 	   	     // int rep = lookup_symbol_entry(curr_var_name_tmp,&tttt);
+	   	     printf("lookinf for %s\n",curr_var_name_tmp);
 		    lookup_symbol_entry(curr_var_name_tmp,&tttt);
 		    if(tttt->is_dec == 1){
 			printf("error : Redeclaration of variable %s\tat line : %d\n",curr_var_name_tmp,line_counter+1);
@@ -858,12 +932,61 @@ direct_declarator
 
 
         }
-        //| direct_declarator '(' ')'
+        | direct_declarator '(' ')' {
+        		current_type_var = -1;
+			printf("TEST940\n");
+       			int len1 = strlen($1.string_exp);
+        		$$.string_exp = malloc(len1+3);
+        		snprintf($$.string_exp,len1+3, "%s()",$1.string_exp);
+        		free($1.string_exp);
+        }
 
-        //| direct_declarator '(' identifier_list ')'
+        | direct_declarator '(' identifier_list ')' {
+        		printf("TEST941\n");
+        		int len1 = strlen($1.string_exp);
+			int len2 = strlen($3.string_exp);
+			$$.string_exp = malloc(len1+len2+3);
+			snprintf($$.string_exp,len1+len2+3, "%s(%s)",$1.string_exp,$3.string_exp);
+			free($1.string_exp);
+			free($3.string_exp);
+        }
+	| direct_declarator '(' parameter_list ')' {
 
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+3);
+		snprintf($$.string_exp,len1+len2+3, "%s(%s)",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
 
         ;
+
+parameter_list
+	: parameter_declaration {
+		$$.string_exp = $1.string_exp;
+	}
+	| parameter_list ',' parameter_declaration {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($3.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
+		free($1.string_exp);
+		free($3.string_exp);
+	}
+	;
+
+parameter_declaration
+	: declaration_specifiers declarator {
+		int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s %s",$1.string_exp,$2.string_exp);
+		free($1.string_exp);
+		free($2.string_exp);
+	}
+
+
 // DONE
 pointer
 	: '*'{
@@ -990,6 +1113,14 @@ primary_expression
 		$$._ast = $2._ast;
 
 	}
+	| STRING {
+		$$.type = STRING;
+		char * curr_var_name_tmp = $1.string_val;
+		int len = strlen(curr_var_name_tmp);
+		$$.string_exp = malloc(len+1);
+		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
+		$$._ast = ast_new_float(-2);
+	}
 	;
 
 
@@ -1000,7 +1131,6 @@ identifier_list
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len);
 		memcpy($$.string_exp,curr_var_name_tmp,len);
-
 		$$._ast = ast_new_id(curr_var_name_tmp);
 
 	}
