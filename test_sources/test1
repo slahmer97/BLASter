@@ -6,10 +6,7 @@
  int i = 0;
  float sum = 0.4;
  sum = a+c;
-  if( a > 0){
-    while(1){
-        int zae =32423;
-        c = 123;
-        }
+    for (i=0;i<10;i++){
+        t[i] = a+b+c ;
     }
  }

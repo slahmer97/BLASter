@@ -47,7 +47,7 @@
 start : translation_unit {
 		printf("-->\n%s\n",$1.string_exp);
 		FILE* d = fopen(file_out, "w");
-		fprintf(d,$1.string_exp);
+		fprintf(d,"%s",$1.string_exp);
 		free($1.string_exp);
 }
 translation_unit
@@ -221,7 +221,8 @@ iteration_statement :
 			   sem_post(globalData.sem_prod_cons);
 			   printf("\n--------------BLAST waitting------------\n");
 			   sem_wait(globalData.sem_symbol);
-			   printf("\n--------------BLAST GOT RESULT---------\n");
+			   printf("\n--------------BLAST GOT RESULT %d---------\n",globalData.symbol->optimized);
+
 		}
 
 		$$.string_exp = result;
