@@ -39,6 +39,7 @@
 %type <vv> selection_statement pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
 %type <vv> iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
 %type <vv> translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
+//%type <vv> un_op
 %start start
 %%
 
@@ -72,12 +73,23 @@ compound_statement
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
 		free($2.string_exp);
+		ast_print($2._ast,0);
+
+	  	 //$$._ast = $2._ast;
+
+
 	}
 	| '{' declaration_list '}' {
 		int len1 = strlen($2.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
 		free($2.string_exp);
+
+	   	$$._ast = $2._ast;
+
+		//ast_print($2._ast,0);
+
+
 	}
 	| '{' declaration_list statement_list '}' {
 		int len1 = strlen($2.string_exp);
@@ -86,6 +98,11 @@ compound_statement
 		snprintf($$.string_exp,len1+len2+6, "{\n%s\n%s\n}",$2.string_exp,$3.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
+
+		//ast_print($2._ast,0);
+		printf("---------------------------\n");
+		ast_print($3._ast,0);
+
 
 	}
 	;
@@ -97,6 +114,7 @@ compound_statement
 statement_list
 	: statement {
 		   $$.string_exp = $1.string_exp;
+		   $$._ast = $1._ast;
 	}
 	| statement_list statement {
                 int len1 = strlen($1.string_exp);
@@ -105,21 +123,30 @@ statement_list
 		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
+
+		$$._ast = ast_new_operation(AST_STATE_LIST,$1._ast,$2._ast);
+
+
+
 	}
 statement
 	: //labeled_statement
 	  compound_statement {
-	  	 $$.string_exp = $1.string_exp;
+	 $$.string_exp = $1.string_exp;
+	 //$$._ast = $1._ast;
+
 	  }
 	| expression_statement {
-	 	$$.string_exp = $1.string_exp;
+         $$.string_exp = $1.string_exp;
+	 //$$._ast = $1._ast;
+
 	}
 	| selection_statement {
 
 		$$.string_exp = $1.string_exp;
 	}
 	| iteration_statement {
-			$$.string_exp = $1.string_exp;
+		$$.string_exp = $1.string_exp;
 	}
 	;
 expression_statement
@@ -129,11 +156,13 @@ expression_statement
 
 	}
 	| expression ';' {
-			int len = strlen($1.string_exp);
-			$$.string_exp = malloc(len+2);
-        		snprintf($$.string_exp,len+2, "%s;",$1.string_exp);
-			//printf("\n---------TEST777------ | %s |---------\n",$1.string_exp);
-			free($1.string_exp);
+		int len = strlen($1.string_exp);
+		$$.string_exp = malloc(len+2);
+		snprintf($$.string_exp,len+2, "%s;",$1.string_exp);
+		//printf("\n---------TEST777------ | %s |---------\n",$1.string_exp);
+		free($1.string_exp);
+
+		$$._ast = $1._ast;
 	}
 	;
 
@@ -204,7 +233,8 @@ iter_counter : {for_depth_counter_var++;}
 expression:
  	assignment_expression {
  		$$.string_exp = $1.string_exp;
- 		printf("\n---------TEST145--- |%s|\n",$$.string_exp );
+ 		$$._ast = $1._ast;
+ 		//printf("\n---------TEST145--- |%s|\n",$$.string_exp );
  	}
 	| expression ',' assignment_expression {
 
@@ -214,6 +244,7 @@ expression:
 		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		$$._ast = ast_new_operation(AST_EXPR_LIST,$1._ast,$3._ast);
 	}
 	;
 postfix_expression
@@ -229,7 +260,7 @@ postfix_expression
 		free($1.string_exp);
 		free($3.string_exp);
 
-		ast_new_operation(AST_ARR_ACCESS,$1._ast,$3._ast);
+		$$._ast = ast_new_operation(AST_ARR_ACCESS,$1._ast,$3._ast);
 	}
 	| postfix_expression '(' ')' {
 		int len1 = strlen($1.string_exp);
@@ -276,7 +307,22 @@ unary_expression
 		free($2.string_exp);
 		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
 	}
+	//| un_op unary_expression {
+         // 		int len2 = strlen($2.string_exp);
+         // 		$$.string_exp = malloc(len2+2);
+         // 		snprintf($$.string_exp,len2+2, "%s%s",$1.string_exp,$2.string_exp);
+         // 		free($2.string_exp);
+//			free($1.string_exp);
+ //         		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
+//	}
 	;
+
+//un_op
+//	:
+	//| '+' {$$.string_exp = malloc(2);$$.string_exp[0] = '+';$$.string_exp[1] = 0;}
+	//| '-' {$$.string_exp = malloc(2);$$.string_exp[0] = '-';$$.string_exp[1] = 0;}
+	//| '!' {$$.string_exp = malloc(2);$$.string_exp[0] = '!';$$.string_exp[1] = 0;}
+	//;
 multiplicative_expression
 	: unary_expression {
 		$$.string_exp = $1.string_exp;
@@ -546,7 +592,6 @@ assignment_expression :
 	logical_or_expression {
 		$$.string_exp = $1.string_exp;
 		$$._ast = $1._ast;
-		ast_print($$._ast,1);
 
 	}
 	| unary_expression assignment_operator assignment_expression {
@@ -558,9 +603,7 @@ assignment_expression :
 		free($2.string_exp);
 		free($3.string_exp);
 
-		//$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
-
-
+		$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
 	}
 	;
 assignment_operator
@@ -574,6 +617,7 @@ assignment_operator
 declaration_list
 	: declaration {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 	}
 	| declaration_list declaration {
 
@@ -583,6 +627,9 @@ declaration_list
 		snprintf($$.string_exp,len1+len2+2, "%s %s",$1.string_exp,$2.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
+
+		//$$._ast = ast_new_operation(AST_DEC_LIST,$1._ast,$2._ast);
+
 
 	}
 	;//=================================================USED
@@ -596,15 +643,17 @@ declaration :
 		//restore the current type variable to -1
 		 current_type_var = -1;
 
-		//COPY
-		// TODO Probelem here segfault!!!!!
-
+		//COP
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($2.string_exp);
 		$$.string_exp = malloc(len1+len2+3);
 		snprintf($$.string_exp,len1+len2+3, "%s %s;",$1.string_exp,$2.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
+
+		//===========================CHECK HERE DECLARATION AST
+		$$._ast = ast_new_operation(AST_DEC_LIST,0,$2._ast);
+		ast_print($$._ast,0);
 
 	}
 	; //==========================================================USED
@@ -688,6 +737,7 @@ init_declarator
 
 		$$.string_exp = $1.string_exp;
 
+		$$._ast = $1._ast;
 	}
 	| declarator '=' initializer {
 		for(int l = 0;l<4;l++){
@@ -706,6 +756,9 @@ init_declarator
 		snprintf($$.string_exp,len1+len2+2, "%s=%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_ASSIGN,$1._ast,$3._ast);
+
 
 	}
 
@@ -732,6 +785,7 @@ declarator
 
 
 
+		$$._ast = $2._ast;
 	}
 	| direct_declarator {
 
@@ -742,6 +796,8 @@ declarator
 		$$.count_m  = $1.count_m;
 	//COPY
 		$$.string_exp = $1.string_exp;
+
+		$$._ast = $1._ast;
 
 	}
 	;
@@ -773,6 +829,10 @@ direct_declarator
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
 
+		$$._ast = ast_new_id(curr_var_name_tmp);
+
+
+
 	}
         | direct_declarator '[' CONST_INT ']' {
          	//$$ = $1 +1;
@@ -789,6 +849,7 @@ direct_declarator
 		snprintf($$.string_exp,len1+len2+4, "%s[%s]",$1.string_exp,$3.string_val);
 		free($1.string_exp);
 
+		$$._ast = ast_new_operation(AST_ARR_ACCESS,$1._ast,ast_new_number($3.val));
 
 
         }
@@ -828,17 +889,22 @@ initializer
 	: assignment_expression {
 	 	$$.string_exp = $1.string_exp;
 
+	 	$$._ast = $1._ast;
+
 	}
 	| '{' initializer_list '}' {
 		int len1 = strlen($2.string_exp);
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
 		free($2.string_exp);
+
+		$$._ast = $2._ast;
 	}
 	;
 initializer_list
 	: initializer {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 	}
 	| initializer_list ',' initializer {
 
@@ -848,6 +914,8 @@ initializer_list
 		snprintf($$.string_exp,len1+len2+2, "%s,%s",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+
+		$$._ast = ast_new_operation(AST_INIT_LIST,$1._ast,$3._ast);
 
 	}
 	;

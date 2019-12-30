@@ -1,7 +1,4 @@
-//
 // Created by slahmer on 11/16/19.
-//
-
 #include <stdio.h>
 #include "headers/symbol.h"
 
@@ -11,7 +8,6 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-
 int shm_fd = -1;
 struct shared_symbol* create_shared_symbol(char* name){
     shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
@@ -117,10 +113,6 @@ int add_symbol_entry(symbol_p p){
     entry->is_used = 1;
     return 1;
 }
-
-
-
-
 int lookup_symbol_entry(const char* name,symbol_p *out){
     if(globalData.symbol->count == 0){
         out=(symbol_p *)0;
@@ -135,14 +127,12 @@ int lookup_symbol_entry(const char* name,symbol_p *out){
     out=(symbol_p *)0;
     return 0;
 }
-
 void copy_name(symbol_p symbolP,const char* name, unsigned int len){
     unsigned int min = (len < IDLEN) ?len:IDLEN;
     memset(symbolP->name,0,IDLEN);
     for (unsigned int i = 0; i < min ; ++i)
         symbolP->name[i] = name[i];
 }
-
 void display_symbol_table(void){
     symbol_p s;
 
@@ -168,5 +158,3 @@ void display_symbol_table(void){
         printf("---------------------------------------------------------\n");
     }
 }
-
-

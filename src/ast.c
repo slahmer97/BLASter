@@ -59,6 +59,10 @@ void ast_free(ast* ast) {
         case AST_IOR:
         case AST_AND_OP:
         case AST_OR_OP:
+        case AST_INIT_LIST:
+        case AST_EXPR_LIST:
+        case AST_ASSIGN:
+        case AST_STATE_LIST:
             ast_free(ast->left);
             ast_free(ast->right);
             break;
@@ -73,11 +77,9 @@ void ast_free(ast* ast) {
         case AST_INC:
             break;
         case AST_DEC:
+        case AST_DEC_LIST:
             break;
 
-
-        case AST_ASSIGN:
-            break;
     }
     free(ast);
 }
@@ -110,6 +112,9 @@ void ast_print(ast* ast, int indent) {
             printf("NUM_F (%f)\n", ast->f_number);
             break;
         case AST_LIST:
+        case AST_EXPR_LIST:
+        case AST_INIT_LIST:
+        case AST_STATE_LIST:
             printf(",\n");
             ast_print(ast->left, indent + 1);
             ast_print(ast->right, indent + 1);
@@ -220,6 +225,10 @@ void ast_print(ast* ast, int indent) {
         case AST_ASSIGN:
             printf("=\n");
             ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
+        case AST_DEC_LIST:
+            printf("DEC\n");
             ast_print(ast->right, indent + 1);
             break;
     };
