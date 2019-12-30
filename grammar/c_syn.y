@@ -177,7 +177,6 @@ selection_statement
 		snprintf($$.string_exp,len1+len2+6, "if(%s)\n%s",$3.string_exp,$5.string_exp);
 		free($3.string_exp);
 		free($5.string_exp);
-		printf("\n---------TEST-IF--- |%s|\n",$$.string_exp );
 	}
 	| IF '(' expression ')' compound_statement ELSE compound_statement {
 		int len1 = strlen($3.string_exp);
@@ -188,11 +187,16 @@ selection_statement
 		free($3.string_exp);
 		free($5.string_exp);
 		free($7.string_exp);
-		printf("\n---------TEST-IF-ELSE--- |\n%s\n|\n",$$.string_exp );
-
 	}
 iteration_statement :
-	 WHILE {printf("START-WHILE\n ");}'(' expression ')' compound_statement {printf("END-WHILE\n ");}
+	 WHILE '(' expression ')' compound_statement {
+	 		int len1 = strlen($3.string_exp);
+         		int len2 = strlen($5.string_exp);
+         		$$.string_exp = malloc(len1+len2+9);
+         		snprintf($$.string_exp,len1+len2+9, "while(%s)\n%s",$3.string_exp,$5.string_exp);
+         		free($3.string_exp);
+         		free($5.string_exp);
+	 }
 
 	| iter_counter FOR '(' expression_statement expression_statement expression')' compound_statement {
 		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);

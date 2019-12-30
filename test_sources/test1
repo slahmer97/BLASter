@@ -1,11 +1,15 @@
 {
  int t[80][100],b[4][2][2];
- float a=4.3;
+ float e=4.3;
+ int a=2;
  float c = 2.2;
  int i = 0;
  float sum = 0.4;
  sum = a+c;
-    for (i=0;i<10;i++){
-        t[1][2] = 0;
+  if( a > 0){
+    while(1){
+        int zae =32423;
+        c = 123;
+        }
     }
  }
