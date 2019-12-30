@@ -1,12 +1,11 @@
 {
- int t[80][100],b[4][2][2];
- float e=4.3;
- int a=2;
- float c = 2.2;
- int i = 0;
- float sum = 0.4;
- sum = a+c;
-    for (i=0;i<10;i++){
-        t[i] = a+b+c ;
+    int t[80];
+    int z[80];
+    int i;
+    int a = 0;
+    int b = 2;
+    int c = 213;
+    for (i=0;i<=10;i++){
+        t[i] = z[b];
     }
  }
