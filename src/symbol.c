@@ -141,7 +141,7 @@ void display_symbol_table(void){
         s = &globalData.symbol->entries[i];
         if(s->is_used == 0)
             continue;
-        if(s->type == VAR_ARR){
+        if(s->type == TYPE_ARRAY){
             printf("name :  %s -- is_dec : %d -- is_init : %d -- type : Arr -- Direct_point : %d -- Vec_pointer : %d --- ", s->name,s->is_dec,s->is_init,s->arr.dimention_m,s->arr.dimention_p);
             printf("[");
             for (int j = 0; j < 4; ++j){
@@ -153,8 +153,12 @@ void display_symbol_table(void){
             }
             printf("]\n");
         }
-        else
-            printf("name :  %s -- is_dec : %d -- is_init : %d -- type : %d\n", s->name,s->is_dec,s->is_init,s->type);
+        else if(s->type == TYPE_VARIABLE)
+            printf("name :  %s -- is_dec : %d -- is_init : %d -- type : %d\n", s->name,s->is_dec,s->is_init,s->var.type);
+        else if(s->type == TYPE_FUNCTION){
+            printf("name :  %s -- is_dec : %d\n", s->name,s->is_dec);
+
+        }
         printf("---------------------------------------------------------\n");
     }
 }

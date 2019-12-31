@@ -9,14 +9,27 @@ IS			(u|U|l|L)*
 	#include<string.h>
     #include "headers/y.tab.h"
 	#include "headers/defs.h"
-	void comment(void);
+ 	void comment(void);
+ 	char* print_detect(void);
 %}
 
 %%
+
 "/*" {
     comment();
 }
-
+"break" {
+    return(BREAK);
+}
+"goto" {
+    return(GOTO);
+}
+"#" {
+    return(HASH);
+}
+"include" {
+    return(INCLUDE);
+}
 "do" {
     return(DO);
 }
@@ -40,7 +53,6 @@ IS			(u|U|l|L)*
 }
 
 "int" {
-    //printf("INT ");
     return(INT);
 }
 
@@ -49,7 +61,6 @@ IS			(u|U|l|L)*
 }
 
 "const" {
-    //printf("CONST_Q ");
     return (CONST_Q);
 }
 
@@ -79,93 +90,76 @@ IS			(u|U|l|L)*
 0{D}+{IS}? {
     //TODO unsigned long
     yylval.vv.string_val = strdup(yytext);
-    //printf("CONST_UNSIGNED ");
     return(CONST_INT);
 }
 
 {D}+{IS}? {
     yylval.vv.val = atoi(yytext);
-    //printf("CONST_D_INT_1 ");
     yylval.vv.string_val = strdup(yytext);
 
     return(CONST_INT);
 }
 
 L?'(\\.|[^\\'])+' {
-    //printf("CONST ");
     return(CONST);
     yylval.vv.string_val = strdup(yytext);
 }
 
 {D}+{E}{FS}? {
     yylval.vv.val = atoi(yytext);
-    //printf("CONST_INT_2 ");
     yylval.vv.string_val = strdup(yytext);
     return(CONST);
 }
 
 {D}*"."{D}+({E})?{FS}? {
-    //printf("CONST_D.D.FS ");
     yylval.vv.string_val = strdup(yytext);
     return(CONST_FLOAT);
 }
 
 {D}+"."{D}*({E})?{FS}? {
-    //TODO float con = to_float( yytext );
-    //TODO yyval = con;
+
     yylval.vv.string_val = strdup(yytext);
-    //printf("CONST_D.D.E.FS ");
     return(CONST_FLOAT);
 }
 
 L?\"(\\.|[^\\"])*\"	{
-    //printf("STRING ");
     yylval.vv.string_val = strdup(yytext);
     return(STRING);
 }
 
 "++" {
-    //printf("++ ");
 
     return (INC);
 }
 "--" {
-    //printf("--");
 
     return (DEC);
 }
 "&&" {
-    //printf("&& ");
     return(AND_OP);
 }
 
 "||" {
-    //printf("|| ");
+    printf("|| ");
     return(OR_OP);
 }
 
 "<=" {
-    //printf("<= ");
     return(LE_OP);
 }
 "<" {
-    //printf("< ");
     return('<');
 }
 ">" {
-    //printf("> ");
     return('>');
 }
 ">=" {
-    //printf(">= ");
     return(GE_OP);
 }
 "<<" {
-    //printf("<< ");
     return(LEFT_OP);
 }
 ">>" {
-    //printf(">> ");
     return(RIGHT_OP);
 }
 
@@ -177,27 +171,22 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 ";" {
-    //printf("END_INSRT\n");
     return(';');
 }
 
 ("{"|"<%") {
-    //printf("{ ");
     return('{');
 }
 
 ("}"|"%>") {
-    //printf("} ");
     return('}');
 }
 
 "," {
-    //printf(", ");
     return(',');
 }
 
 "="	{
-    //printf("= ");
     return('=');
 }
 
@@ -210,12 +199,10 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 ("["|"<:") {
-    //printf("[ ");
     return('[');
 }
 
 ("]"|":>") {
-    //printf("] ");
     return(']');
 }
 
@@ -224,32 +211,32 @@ L?\"(\\.|[^\\"])*\"	{
 }
 
 "%"	{
-    //printf("% ");
     return('%');
 }
 
 
 "-"	{
-   // printf("- ");
     return('-');
 }
 
 "+"	{
-    //printf("+ ");
     return('+');
 }
 
 "*"	{
-  //  printf("* ");
     return('*');
 }
 
 "/" {
-    //printf("/ ");
     return('/');
 }
 "!" {
     return ('!');
+}
+"printf(\"" {
+
+    yylval.vv.string_val = print_detect();
+    return PRINTF;
 }
 
 [ \t\v\f]+ {
@@ -269,7 +256,6 @@ void comment(void)
 
 loop:
 	while ((c = input()) != '*' && c != 0);
-		//putchar(c);
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
@@ -277,7 +263,31 @@ loop:
 		goto loop;
 	}
 
-	//if (c != 0)
-		//putchar(c1);
 
+}
+
+
+char* print_detect(void){
+	char c, c1;
+    char * ret = malloc(100);
+    ret[0] = 'p';ret[1] = 'r';
+    ret[2] = 'i';ret[3] = 'n';
+    ret[4] = 't';ret[5] = 'f';
+    ret[6] = '(';ret[7] = '"';
+    int i=8;
+loop:
+	while ((c = input()) != ')' && c != 0){
+	    ret[i++] = c;
+	}
+
+	if ((c1 = input()) != ';' && c != 0)
+	{
+		unput(c1);
+		goto loop;
+	}
+	ret[i++] = ')';
+	ret[i++] = ';';
+	ret[i] = 0;
+
+	return ret;
 }

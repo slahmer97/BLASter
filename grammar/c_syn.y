@@ -28,10 +28,10 @@
 
 }
 
-%token FOR WHILE DO IF ELSE RETURN BREAK GOTO '#' 'include'
+%token FOR WHILE DO IF ELSE RETURN BREAK GOTO HASH INCLUDE
 %token INT VOID FLOAT
 %token CONST_Q //type qualifier  const int...
-%token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST
+%token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST PRINTF
 %token '='
 %token '(' ')' ';' '}' '{' ']' '[' '/' '*' '+' '-' '<' '>' '%'
 %token AND_OP OR_OP LE_OP GE_OP EQ_OP NE_OP INC DEC LEFT_OP RIGHT_OP
@@ -75,8 +75,8 @@ include_list:
 	    	$$.string_exp = $1.string_exp;
 	    }
 	    ;
-include_elm : '#' 'include' STRING {
-	int len = 1+7+strlen($3.string_val)+1;
+include_elm : HASH INCLUDE STRING {
+	int len = strlen($3.string_val)+10;
 	$$.string_exp = malloc(len);
 	snprintf($$.string_exp,len,"#include %s",$3.string_val);
 }
@@ -266,6 +266,13 @@ expression_statement
 
 		$$._ast = $1._ast;
 	}
+	| PRINTF {
+		int len = strlen($1.string_val);
+		$$.string_exp = malloc(len+2);
+		snprintf($$.string_exp,len+2,"%s\n",$1.string_val);
+		free($1.string_val);
+
+	}
 	;
 
 //=======================================Statement-END==================================================================
@@ -414,22 +421,7 @@ unary_expression
 		free($2.string_exp);
 		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
 	}
-	//| un_op unary_expression {
-         // 		int len2 = strlen($2.string_exp);
-         // 		$$.string_exp = malloc(len2+2);
-         // 		snprintf($$.string_exp,len2+2, "%s%s",$1.string_exp,$2.string_exp);
-         // 		free($2.string_exp);
-//			free($1.string_exp);
- //         		$$._ast = ast_new_operation(AST_DEC,0,$2._ast);
-//	}
-	;
 
-//un_op
-//	:
-	//| '+' {$$.string_exp = malloc(2);$$.string_exp[0] = '+';$$.string_exp[1] = 0;}
-	//| '-' {$$.string_exp = malloc(2);$$.string_exp[0] = '-';$$.string_exp[1] = 0;}
-	//| '!' {$$.string_exp = malloc(2);$$.string_exp[0] = '!';$$.string_exp[1] = 0;}
-	//;
 multiplicative_expression
 	: unary_expression {
 		$$.string_exp = $1.string_exp;
@@ -743,9 +735,6 @@ declaration_list
 
 //DONE
 declaration :
-	//: declaration_specifiers ';' // long; or int;
-	//we have type in declaration_specifiers
-	// check if declaration_specifier type fits into all items of init_declarator_list
 	declaration_specifiers init_declarator_list ';' {
 		//restore the current type variable to -1
 		 current_type_var = -1;
@@ -776,8 +765,6 @@ declaration_specifiers
 
 		 $$.string_exp = $1.string_exp;
 	}
-	//| type_specifier declaration_specifiers // int ..
-	//| type_qualifier declaration_specifiers //const int ...
 	;
 //=======================================================USED
 //DONE
@@ -809,7 +796,7 @@ init_declarator_list
 		int countp = $1.count_p; //TODO maybe 0
 		int countm = $1.count_m;
 		if(countp > 0 || countm > 0){
-			varp->type = VAR_ARR;
+			varp->type = TYPE_ARRAY;
 			varp->arr.dimention_m = countm;
 			varp->arr.dimention_p = countp;
 			for(int pp = 0;pp<4;pp++)
@@ -855,7 +842,21 @@ init_declarator
 		$$.count_p  = $1.count_p; //TODO maybe 0
 		$$.count_m  = $1.count_m;
 
+		symbol_p e = $1.sentry;
+		e->is_init = 1;
 
+		if(e->type == TYPE_VARIABLE && $3.type != 1){
+			printf("error :VAR Assignement bad type line: %d\n",line_counter+1);
+			return -1;
+		}
+		if(e->type == TYPE_ARRAY && $3.type != 0){
+			printf("error :ARR Assignement bad type line: %d\n",line_counter+1);
+			return -1;
+		}
+		if(e->type == TYPE_FUNCTION){
+			printf("error :Functions can't be assigned line: %d\n",line_counter+1);
+			return -1;
+		}
 
 
 		int len1 = strlen($1.string_exp);
@@ -917,6 +918,8 @@ direct_declarator
 		$$.count_m  = 0;
 		direct_declarator_var = 0;
 		$$.sentry = $1.sentry;
+		symbol_p tmp = $$.sentry;
+		tmp->type = TYPE_VARIABLE;
 		$$.string_val = $1.string_val;
 
 		//set is_dec bit for the current variable;
@@ -950,7 +953,9 @@ direct_declarator
 		$$.count_m = direct_declarator_var;
 		$$.string_val = $1.string_val;
 
-
+		$$.sentry = $1.sentry;
+		symbol_p tmp = $$.sentry;
+		tmp->type = TYPE_ARRAY;
 
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_val);
@@ -969,6 +974,10 @@ direct_declarator
         		$$.string_exp = malloc(len1+3);
         		snprintf($$.string_exp,len1+3, "%s()",$1.string_exp);
         		free($1.string_exp);
+
+			$$.sentry = $1.sentry;
+			symbol_p tmp = $$.sentry;
+			tmp->type = TYPE_FUNCTION;
         }
 
         | direct_declarator '(' identifier_list ')' {
@@ -979,15 +988,23 @@ direct_declarator
 			snprintf($$.string_exp,len1+len2+3, "%s(%s)",$1.string_exp,$3.string_exp);
 			free($1.string_exp);
 			free($3.string_exp);
+			$$.sentry = $1.sentry;
+		symbol_p tmp = $$.sentry;
+			tmp->type = TYPE_FUNCTION;
+
         }
 	| direct_declarator '(' parameter_list ')' {
 
+		$$.sentry = $1.sentry;
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_exp);
 		$$.string_exp = malloc(len1+len2+3);
 		snprintf($$.string_exp,len1+len2+3, "%s(%s)",$1.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($3.string_exp);
+		symbol_p tmp = $$.sentry;
+		tmp->type = TYPE_FUNCTION;
+		//arg number
 	}
 
         ;
@@ -1048,6 +1065,7 @@ initializer
 	 	$$.string_exp = $1.string_exp;
 
 	 	$$._ast = $1._ast;
+	 	$$.type = 1;//simple
 
 	}
 	| '{' initializer_list '}' {
@@ -1055,6 +1073,7 @@ initializer
 		$$.string_exp = malloc(len1+3);
 		snprintf($$.string_exp,len1+3, "{%s}",$2.string_exp);
 		free($2.string_exp);
+		$$.type = 0;//complex
 
 		$$._ast = $2._ast;
 	}

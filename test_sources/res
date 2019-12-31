@@ -1,7 +1,9 @@
-int printf();
+#include "sd"
 int main()
 {
-int a; int t[80];
+float a; int b; int t[80];
 while(1)
-{printf();}
+{a=0;}
+printf("sqdqsdqsd",AZEAZ,AZE);
+
 }

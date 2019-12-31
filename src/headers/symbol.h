@@ -20,17 +20,20 @@ struct global_data globalData;
 
 #define VAR_SYM 999999
 #define VAR_ARR 999999
+
+
 #define DIM_MAX 10 //TODO change later to dynamic
 
+#define TYPE_VARIABLE 88888
+#define TYPE_ARRAY 88887
+#define TYPE_FUNCTION 88889
 struct __symbol__ {
     char name[IDLEN];
     int type;
     union{
-        //TODO
         struct __sym_var__{
             unsigned int type;
         }var;
-
         struct __sym_arr_{
             unsigned int type;
             unsigned int is_static :1;
