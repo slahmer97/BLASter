@@ -28,7 +28,7 @@
 
 }
 
-%token FOR WHILE DO IF ELSE RETURN BREAK GOTO
+%token FOR WHILE DO IF ELSE RETURN BREAK GOTO '#' 'include'
 %token INT VOID FLOAT
 %token CONST_Q //type qualifier  const int...
 %token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST
@@ -38,7 +38,7 @@
 %type <vv> type_specifier declaration_specifiers primary_expression expression  compound_statement statement_list declaration_list identifier_list
 %type <vv> selection_statement pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
 %type <vv> jump_statement iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
-%type <vv> parameter_declaration parameter_list external_declaration function_definition translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
+%type <vv> include_elm include_list parameter_declaration parameter_list external_declaration function_definition translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
 //%type <vv> un_op
 %start start
 %%
@@ -49,6 +49,36 @@ start : translation_unit {
 		FILE* d = fopen(file_out, "w");
 		fprintf(d,"%s",$1.string_exp);
 		free($1.string_exp);
+}
+     | include_list translation_unit {
+     		int len1 = strlen($1.string_exp);
+     		int len2 = strlen($2.string_exp);
+    		char* res = malloc(len1+len2+2);
+		snprintf(res,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+
+		printf("-->\n%s\n",res);
+		FILE* d = fopen(file_out, "w");
+		fprintf(d,"%s",res);
+		free($1.string_exp);
+		free($2.string_exp);
+     }
+include_list:
+            include_list include_elm {
+            	int len1 = strlen($1.string_exp);
+		int len2 = strlen($2.string_exp);
+		$$.string_exp = malloc(len1+len2+2);
+		snprintf($$.string_exp,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+            	free($1.string_exp);
+            	free($2.string_exp);
+            }
+	    | include_elm {
+	    	$$.string_exp = $1.string_exp;
+	    }
+	    ;
+include_elm : '#' 'include' STRING {
+	int len = 1+7+strlen($3.string_val)+1;
+	$$.string_exp = malloc(len);
+	snprintf($$.string_exp,len,"#include %s",$3.string_val);
 }
 translation_unit
 	: external_declaration {
@@ -79,7 +109,7 @@ function_definition
 		int len3 = strlen($3.string_exp);
 		int len4 = strlen($4.string_exp);
 		$$.string_exp = malloc(len1+len2+len3+len4+4);
-		snprintf($$.string_exp,len1+len2+2, "%s\n%s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp,$4.string_exp);
+		snprintf($$.string_exp,len1+len2+len3+len4+4, "%s %s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp,$4.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);
@@ -90,7 +120,7 @@ function_definition
 		int len2 = strlen($2.string_exp);
 		int len3 = strlen($3.string_exp);
 		$$.string_exp = malloc(len1+len2+len3+3);
-		snprintf($$.string_exp,len1+len2+2, "%s\n%s\n%s",$1.string_exp,$2.string_exp,$3.string_exp);
+		snprintf($$.string_exp,len1+len2+len3+3, "%s %s\n%s",$1.string_exp,$2.string_exp,$3.string_exp);
 		free($1.string_exp);
 		free($2.string_exp);
 		free($3.string_exp);

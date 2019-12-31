@@ -75,6 +75,7 @@ IS			(u|U|l|L)*
     return(IDENTIFIER);
 }
 
+
 0{D}+{IS}? {
     //TODO unsigned long
     yylval.vv.string_val = strdup(yytext);

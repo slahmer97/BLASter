@@ -1,3 +1,7 @@
 int printf();
-int
-main()
+int main()
+{
+int a; int t[80];
+while(1)
+{printf();}
+}
