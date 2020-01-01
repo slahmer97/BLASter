@@ -17,8 +17,6 @@ int yyerror(const char *str);
 int yywrap(void);
 int yyparse(void);
 int yylex(void);
-
-
 //TODO ALL public functions
 
 

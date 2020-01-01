@@ -27,9 +27,8 @@
 	}vv;
 
 }
-
-%token FOR WHILE DO IF ELSE RETURN BREAK GOTO HASH INCLUDE
 %token INT VOID FLOAT
+%token FOR WHILE DO IF ELSE RETURN BREAK GOTO HASH INCLUDE
 %token CONST_Q //type qualifier  const int...
 %token <vv> CONST_INT CONST_FLOAT IDENTIFIER STRING CONST PRINTF
 %token '='
@@ -840,7 +839,8 @@ init_declarator
 		$$.count_m  = $1.count_m;
 
 		$$.string_exp = $1.string_exp;
-
+		symbol_p e= $$.sentry;
+		e->glob_type = current_type_var;
 
 		$$._ast = $1._ast;
 	}
@@ -854,6 +854,7 @@ init_declarator
 
 		symbol_p e = $1.sentry;
 		e->is_init = 1;
+		e->glob_type = current_type_var;
 
 		if(e->type == TYPE_VARIABLE && $3.type != 1){
 			printf("error :VAR Assignement bad type line: %d\n",line_counter+1);

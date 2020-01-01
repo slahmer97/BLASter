@@ -1,27 +1,28 @@
 #include "stdio.h"
+#include "stdlib.h"
+#include "cblas.h"
+
+
 int main()
-{   int t[20];
-    int z[20] = {0};
+{
+	float t[20];
+	float z[20];
+	int i;
 
+	for(i=0;i<=19;i++)
+	{
+		t[i] = i+5;
 
-    int kk[100];
-    int zz[100];
+	}
+	for(i=0;i<=19;i++)
+	{
+		z[i] = t[i];
+	}
 
-    int uu[20];
+	for(i=0;i<20;i++)
+	{
+		printf("%f\n",z[i]);
 
-
-    int i;
-    for(i = 0;i<=19;i++){
-        t[i] = z[i] ;
-    }
-
-    for(i = 0;i<=99;i++){
-        kk[i] = zz[i] ;
-    }
-
-    for(i = 0;i<=19;i++){
-        uu[i] = 0;
-    }
-
+	}
+	return 0;
 }
-

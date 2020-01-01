@@ -30,6 +30,7 @@ struct global_data globalData;
 #define TYPE_VARIABLE 88888
 #define TYPE_ARRAY 88887
 #define TYPE_FUNCTION 88889
+
 struct __symbol__ {
     char name[IDLEN];
     int type;
