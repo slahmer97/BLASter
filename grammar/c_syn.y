@@ -39,7 +39,6 @@
 %type <vv> selection_statement pointer direct_declarator declarator init_declarator declaration init_declarator_list initializer initializer_list statement postfix_expression
 %type <vv> jump_statement iteration_statement multiplicative_expression additive_expression shift_expression relational_expression equality_expression unary_expression assignment_expression
 %type <vv> include_elm include_list parameter_declaration parameter_list external_declaration function_definition translation_unit expression_statement and_expression exclusive_or_expression inclusive_or_expression logical_or_expression logical_and_expression assignment_operator
-//%type <vv> un_op
 %start start
 %%
 
@@ -316,6 +315,7 @@ iteration_statement :
 		int len4 = strlen($8.string_exp);
 		char *result = malloc(len1+len2+len3+len4+9);
 		snprintf(result,len1+len2+len3+len4+9, "for(%s %s %s)\n%s",$4.string_exp,$5.string_exp,$6.string_exp,$8.string_exp);
+		$$.string_exp = result;
 		if(for_depth_counter_var == 1){
 			printf("\n--------------Optimizer Call------------\n");
 			   FILE *fptr;
@@ -331,10 +331,19 @@ iteration_statement :
 			   printf("\n--------------BLAST waitting------------\n");
 			   sem_wait(globalData.sem_symbol);
 			   printf("\n--------------BLAST GOT RESULT %d---------\n",globalData.symbol->optimized);
+			   if(globalData.symbol->optimized == 1){
+				int lenm = globalData.symbol->bytes_count;
+			   	printf("[+] reading optimizer output count(%d)\n",lenm);
+			        fptr = fopen(OPTIMIZER_FILE,"r");
+			   	char* op_res = malloc(lenm);
+			   	memset(op_res,0,lenm);
+			   	fgets(op_res,lenm,fptr);
+			   	free($$.string_exp);
+			   	$$.string_exp = op_res;
+			   }
 
 		}
 
-		$$.string_exp = result;
 
 		for_depth_counter_var--;
 		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
@@ -832,6 +841,7 @@ init_declarator
 
 		$$.string_exp = $1.string_exp;
 
+
 		$$._ast = $1._ast;
 	}
 	| declarator '=' initializer {
@@ -1191,7 +1201,6 @@ identifier_list
 		$$.string_exp = malloc(len+len2+1);
 		snprintf($$.string_exp,len+len2+1,"%s,%s",$1.string_exp,curr_var_name_tmp);
 		free($1.string_exp);
-
 		$$._ast = ast_new_operation(AST_LIST,$1._ast,ast_new_id(curr_var_name_tmp)) ;
 	}
 	;

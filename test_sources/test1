@@ -1,13 +1,11 @@
 #include "sd"
 int main()
-{
-    float a;
-    int b ;
-    int t[80];
-    while(1){
-        a = 0;
+{   int t[80];
+    int z[80] = {0};
+    int i;
+    for(i = 0;i<=20;i++){
+        t[i] = z[i] ;
     }
-    printf("sqdqsdqsd",AZEAZ,AZE);
 
 }
 

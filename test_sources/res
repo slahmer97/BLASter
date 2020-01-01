@@ -1,9 +1,6 @@
 #include "sd"
 int main()
 {
-float a; int b; int t[80];
-while(1)
-{a=0;}
-printf("sqdqsdqsd",AZEAZ,AZE);
-
+int t[80]; int z[80]={0}; int i;
+cblas_ccopy(SHI-ASS,(const void*)&t,1,z,1);
 }
