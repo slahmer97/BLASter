@@ -1,10 +1,26 @@
-#include "sd"
+#include "stdio.h"
 int main()
-{   int t[80];
-    int z[80] = {0};
+{   int t[20];
+    int z[20] = {0};
+
+
+    int kk[100];
+    int zz[100];
+
+    int uu[20];
+
+
     int i;
-    for(i = 0;i<=20;i++){
+    for(i = 0;i<=19;i++){
         t[i] = z[i] ;
+    }
+
+    for(i = 0;i<=99;i++){
+        kk[i] = zz[i] ;
+    }
+
+    for(i = 0;i<=19;i++){
+        uu[i] = 0;
     }
 
 }
