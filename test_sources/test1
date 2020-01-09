@@ -5,16 +5,35 @@
 
 int main()
 {
-    float k[20];
-    float y[20];
-
-    int a=2,b=3,c=45;
+	float t[20]={10.};
+	float z[20];
 	int i;
 
-    for(i=0;i<19;i++)
-    {
-        y[i] = y[i]*(123+2*k[0]);
-    }
+
+	for(i=0;i<=19;i++)
+	{
+		t[i] = i;
+
+	}
+
+	for(i=0;i<=19;i++)
+	{
+		z[i] = t[i];
+
+	}
+	for(i=0;i<20;i++)
+	{
+		printf("%f\n",z[i]);
+
+	}
+/*cblas_example.c
+
+"/home/serradj/CLionProjects/testcbals/cblas/CBLAS/examples/newtest.c"
+"/home/serradj/CLionProjects/testcbals/cblas/CBLAS/examples/cblas_example1.c"
+
+
+
+*/
 
 	return 0;
 }
