@@ -24,7 +24,6 @@ int main(int argc,char**argv) {
 
     if(show == 10)
         display_symbol_table();
-
     globalData.symbol->finished = 1;
 
     sem_post(globalData.sem_prod_cons);
