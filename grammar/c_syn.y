@@ -44,15 +44,24 @@
 //==================================START-EXTERNAL======================================================================
 start : translation_unit {
 		printf("-->\n%s\n",$1.string_exp);
-		FILE* d = fopen(file_out, "w");
-		fprintf(d,"%s",$1.string_exp);
+		    char * inc = "#include <cblas.h>"
+                                 "#include <primitives.h>";
+		FILE* d = fopen(file_out, "a");
+		char* tot = malloc(strlen($1.string_exp)+100);
+		memset(tot,0,strlen($1.string_exp)+100);
+		snprintf(tot,strlen($1.string_exp)+100,"%s\n%s",inc,$1.string_exp);
+		printf("%s\n",tot);
+		fprintf(d,"%s",tot);
 		free($1.string_exp);
+		free(tot);
 }
      | include_list translation_unit {
      		int len1 = strlen($1.string_exp);
      		int len2 = strlen($2.string_exp);
-    		char* res = malloc(len1+len2+2);
-		snprintf(res,len1+len2+2, "%s\n%s",$1.string_exp,$2.string_exp);
+    		char* res = malloc(len1+len2+100);
+	    	char * inc = "#include \"cblas.h\"\n"
+			 "#include \"primitives.h\"";
+		snprintf(res,len1+len2+100, "%s\n%s\n%s",inc,$1.string_exp,$2.string_exp);
 
 		printf("-->\n%s\n",res);
 		FILE* d = fopen(file_out, "w");
