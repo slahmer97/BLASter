@@ -15,45 +15,12 @@ int main()
     }
     for(i=0;i<=3;i++)
     {
-        t[i] = t[i]*a+z[i];
+        t[i] = t[i]+a*z[i];
     }
 
     for(i=0;i<=3;i++)
     {
        printf("%f\t",t[i]);
     }
-    printf("\n");
-
-
-    for(i=0;i<=3;i++)
-    {
-        t[i] = 1;
-    }
-    for(i=0;i<=3;i++)
-    {
-        t[i] = t[i]+z[i]*a;
-    }
-
-    for(i=0;i<=3;i++)
-    {
-       printf("%f\t",t[i]);
-    }
-    printf("\n");
-
-
- for(i=0;i<=3;i++)
-    {
-        t[i] = 1;
-    }
-    for(i=0;i<=3;i++)
-    {
-        t[i] = t[i]*a+z[i]*a;
-    }
-
-    for(i=0;i<=3;i++)
-    {
-       printf("%f\t",t[i]);
-    }
-    printf("\n");
 	return 0;
 }
