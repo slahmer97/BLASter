@@ -12,7 +12,7 @@ int main()
     }
     for(i=0;i<=3;i++)
     {
-        t[i] = a*t[a];
+        t[i] = a*z[a];
     }
 
     for(i=0;i<=3;i++)

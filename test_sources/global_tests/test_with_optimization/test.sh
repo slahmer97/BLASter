@@ -15,14 +15,14 @@ MARGE=0.2;
 echo "==============Testing : test${i}.c ===================" ;
 
 
-$blaster "${test_dir}/test${i}.c" "${test_dir}/res${i}.c" "10" > "/tmp/blaster_log${i}.data" &
+$blaster "${test_dir}/test${i}.c" "${test_dir}/res/res${i}.c" "10" > "/tmp/blaster_log${i}.data" &
 sleep $MARGE && $optimizer  > "/tmp/optimizer_log${i}.data"
 
 sleep $MARGE ;
 
 gcc "${test_dir}/test${i}.c" ;
 ./a.out > "/tmp/first${i}.log" ;
-mv "${test_dir}/res${i}.c" "${compiling_dir}/test_.c"
+mv "${test_dir}/res/res${i}.c" "${compiling_dir}/test_.c"
 
 
 
