@@ -10,9 +10,24 @@ int main()
     for(i=0;i<=3;i++)
     {
         for (j = 0; j <=3 ; j++) {
-            t[i][j] = z[i][j];
+            t[i][j] = 1;
         }
     }
+
+    for(i=0;i<=3;i++)
+    {
+        for (j = 0; j <=3 ; j++) {
+            t[i][j] = t[i][j]*a;
+        }
+    }
+
+    for(i=0;i<=3;i++)
+    {
+        for (j = 0; j <=3 ; j++) {
+            z[i][j] = t[i][j];
+        }
+    }
+
 
     for(i=0;i<=3;i++)
     {

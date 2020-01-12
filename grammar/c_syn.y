@@ -200,7 +200,6 @@ compound_statement
 
 	   	$$._ast = $2._ast;
 
-		//ast_print($2._ast,0);
 
 
 	}
@@ -213,7 +212,7 @@ compound_statement
 		free($3.string_exp);
 
 		//ast_print($2._ast,0);
-		printf("---------------------------\n");
+		//printf("---------------------------\n");
 		//ast_print($3._ast,0);
 
 
@@ -328,7 +327,7 @@ iteration_statement :
 		ast* fora = ast_new_for($4._ast,$5._ast,$6._ast,$8._ast);
 		ast_print(fora,0);
 		$$._ast = fora;
-		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
+		//printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 		int len1 = strlen($4.string_exp);
 		int len2 = strlen($5.string_exp);
 		int len3 = strlen($6.string_exp);
@@ -350,10 +349,10 @@ iteration_statement :
 			   sem_post(globalData.sem_prod_cons);
 			   printf("\n--------------BLAST waitting------------\n");
 			   sem_wait(globalData.sem_symbol);
-			   printf("\n--------------BLAST GOT RESULT %d---------\n",globalData.symbol->optimized);
+			   //printf("\n--------------BLAST GOT RESULT %d---------\n",globalData.symbol->optimized);
 			   if(globalData.symbol->optimized == 1){
 				int lenm = globalData.symbol->bytes_count;
-			   	printf("[+] reading optimizer output count(%d)\n",lenm);
+			   	//printf("[+] reading optimizer output count(%d)\n",lenm);
 			        fptr = fopen(OPTIMIZER_FILE,"r");
 			   	char* op_res = malloc(lenm);
 			   	memset(op_res,0,lenm);
@@ -371,7 +370,7 @@ iteration_statement :
 
 
 		for_depth_counter_var--;
-		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
+		//printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 
 	}
 iter_counter : {for_depth_counter_var++;}
@@ -963,7 +962,7 @@ direct_declarator
 		if(current_type_var != -1){
 		    symbol_p tttt;
 	   	     // int rep = lookup_symbol_entry(curr_var_name_tmp,&tttt);
-	   	     printf("lookinf for %s\n",curr_var_name_tmp);
+	   	    // printf("lookinf for %s\n",curr_var_name_tmp);
 		    lookup_symbol_entry(curr_var_name_tmp,&tttt);
 		    if(tttt->is_dec == 1){
 			printf("error : Redeclaration of variable %s\tat line : %d\n",curr_var_name_tmp,line_counter+1);
@@ -1151,7 +1150,7 @@ primary_expression
 
 		}
 
-		printf("------------1138--------Variable %s \n",curr_var_name_tmp);
+		//printf("------------1138--------Variable %s \n",curr_var_name_tmp);
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
