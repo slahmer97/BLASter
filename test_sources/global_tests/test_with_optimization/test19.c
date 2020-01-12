@@ -3,17 +3,22 @@
 int main()
 {
     float t[4];
-    float z[4] = {1.0,2.0,3.0,4.0};
+    float z[4] = {1.0,1.0,1.0,1.0};
     int i;
-    int a = 2;
+    float a = 2.0,b = 1.0;
     for(i=0;i<=3;i++)
     {
-        t[i] = 1;
+        t[i] = a+(b/a);
+    }
+
+	for(i=0;i<=3;i++)
+    {	
+        t[i] = t[i] + z[i] * b ;
     }
 
     for(i=0;i<=3;i++)
     {
-        printf("%f\t",t[i]);
+        printf("%f\n",t[i]);
     }
     return 0;
 }
