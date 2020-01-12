@@ -6,9 +6,25 @@ int main()
 {
     float t[4];
     float z[4] = {1.0,1.0,1.0,1.0};
-    int i;
+    int i; 
+    int j;
     float a = 2.0,b = 1.0;
     float sum = a+b;
+
+    float x[5][5];
+    
+    while (i < 5) {
+      i++;
+    }
+    
+    for (i=0; i<=4; i++) 
+    {
+      for (j=0; j<=4; j++) 
+      {
+        x[i][j] = (5 + 6) / 5;
+      }
+    }
+
     for(i=0;i<=3;i++)
     {
         t[i] = sum;

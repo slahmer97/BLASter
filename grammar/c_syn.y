@@ -242,7 +242,7 @@ statement
 	: //labeled_statement
 	  compound_statement {
 	 $$.string_exp = $1.string_exp;
-	 //$$._ast = $1._ast;
+	 $$._ast = $1._ast;
 
 	  }
 	| expression_statement {
@@ -256,6 +256,7 @@ statement
 	}
 	| iteration_statement {
 		$$.string_exp = $1.string_exp;
+		$$._ast = $1._ast;
 	}
 	| jump_statement{
 		$$.string_exp = $1.string_exp;
@@ -310,6 +311,10 @@ selection_statement
 	}
 iteration_statement :
 	 WHILE '(' expression ')' compound_statement {
+		 	ast *while_ast = ast_new_operation(AST_WHILE, $3._ast, $5._ast);
+			ast_print(while_ast, 0);
+			$$._ast = while_ast;
+
 	 		int len1 = strlen($3.string_exp);
          		int len2 = strlen($5.string_exp);
          		$$.string_exp = malloc(len1+len2+9);
@@ -322,6 +327,7 @@ iteration_statement :
 
 		ast* fora = ast_new_for($4._ast,$5._ast,$6._ast,$8._ast);
 		ast_print(fora,0);
+		$$._ast = fora;
 		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 		int len1 = strlen($4.string_exp);
 		int len2 = strlen($5.string_exp);

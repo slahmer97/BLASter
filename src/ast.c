@@ -259,6 +259,11 @@ void ast_print(ast* ast, int indent) {
             ast_print(ast->inc, indent + 1);
             ast_print(ast->core, indent + 1);
             break;
+        case AST_WHILE:
+            printf("WHILE\n");
+            ast_print(ast->left, indent + 1);
+            ast_print(ast->right, indent + 1);
+            break;
         case AST_PRINTF:
             printf("PRINTF()\n");
             break;
