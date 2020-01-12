@@ -6,19 +6,22 @@ int main()
     float ww[20];
     float z[4] = {1.0,2.0,3.0,4.0};
     int i;
-    int a = 2,b=20,c=33;ssd
+    int a = 2,b=20,c=33;
     for(i=0;i<=3;i++)
     {
         t[i] = 10*a+c/(b*c);
     }
+
     for(i=0;i<=19;i++)
     {
         ww[i] = t[1]+t[3]*10;
     }
+
     for(i=0;i<=19;i++)
     {
-        ww[i] = ww[i]*(a*b*c/d);
+        ww[i] = ww[i]*(a*b*c);
     }
+
 
     for(i=0;i<=3;i++)
     {

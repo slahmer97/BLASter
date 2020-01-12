@@ -17,9 +17,9 @@ sleep $MARGE && $optimizer  > "/tmp/optimizer_log${i}.data"
 
 sleep $MARGE ;
 
-gcc "${test_dir}/test${i}.c" ;
-./a.out > "/tmp/first${i}.log" ;
-mv "${test_dir}/res/res${i}.c" "${compiling_dir}/test_.c"
+gcc "${test_dir}/test${i}.c" || exit 1;
+./a.out > "/tmp/first${i}.log" || exit 2;
+mv "${test_dir}/res/res${i}.c" "${compiling_dir}/test_.c" || exit 3;
 
 
 

@@ -2,13 +2,17 @@
 #include "stdlib.h"
 int main()
 {
-    float t[4];
     float z[4] = {1.0,2.0,3.0,4.0};
+    float t[4] = {6.0,7.0,8.0,9.0};
+
     int i;
     int a = 2;
+    float tmp;
     for(i=0;i<=3;i++)
     {
-        t[i] = 1;
+        tmp = z[i];
+        z[i] = t[i];
+        t[i] = tmp;
     }
 
     for(i=0;i<=3;i++)
