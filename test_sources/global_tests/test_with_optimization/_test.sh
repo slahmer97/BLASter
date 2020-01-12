@@ -12,7 +12,7 @@ cd $test_dir || echo "directory doesn't exist"
 i="$1";
 MARGE=0.2;
 
-$blaster "${test_dir}/test${i}.c" "${test_dir}/res/res${i}.c" "10" > "/tmp/blaster_log${i}.data" &
+$blaster "-i" "${test_dir}/test${i}.c" "-o" "${test_dir}/res/res${i}.c" > "/tmp/blaster_log${i}.data" &
 sleep $MARGE && $optimizer  > "/tmp/optimizer_log${i}.data"
 
 sleep $MARGE ;
