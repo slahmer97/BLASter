@@ -514,15 +514,15 @@ static const yytype_uint16 yyrline[] =
        0,    46,    46,    59,    74,    82,    86,    94,    97,   108,
      111,   116,   128,   138,   148,   159,   164,   168,   172,   180,
      184,   195,   207,   228,   232,   243,   248,   253,   257,   261,
-     266,   271,   280,   294,   302,   313,   326,   372,   377,   381,
-     393,   397,   407,   415,   423,   433,   437,   445,   454,   458,
-     471,   482,   497,   502,   514,   528,   534,   545,   558,   564,
-     573,   582,   592,   603,   609,   620,   631,   636,   648,   654,
-     665,   671,   682,   688,   700,   706,   719,   724,   737,   745,
-     749,   766,   788,   800,   807,   813,   822,   838,   854,   867,
-     909,   930,   947,   982,  1003,  1016,  1030,  1047,  1050,  1061,
-    1073,  1084,  1098,  1105,  1116,  1120,  1136,  1159,  1174,  1190,
-    1202,  1215,  1225
+     266,   271,   280,   294,   302,   313,   326,   377,   382,   386,
+     398,   402,   412,   420,   428,   438,   442,   450,   459,   463,
+     476,   487,   502,   507,   519,   533,   539,   550,   563,   569,
+     578,   587,   597,   608,   614,   625,   636,   641,   653,   659,
+     670,   676,   687,   693,   705,   711,   724,   729,   742,   750,
+     754,   771,   793,   805,   812,   818,   827,   843,   859,   872,
+     914,   935,   952,   987,  1008,  1021,  1035,  1052,  1055,  1066,
+    1078,  1089,  1103,  1110,  1121,  1125,  1141,  1164,  1179,  1195,
+    1207,  1220,  1230
 };
 #endif
 
@@ -1915,7 +1915,12 @@ yyreduce:
 			        fptr = fopen(OPTIMIZER_FILE,"r");
 			   	char* op_res = malloc(lenm);
 			   	memset(op_res,0,lenm);
-			   	fgets(op_res,lenm,fptr);
+			   	char *r = fgets(op_res,lenm,fptr);
+				
+				if (r != NULL) {
+					perror("fgets error 363\n");
+				}
+
 			   	free((yyval.vv).string_exp);
 			   	(yyval.vv).string_exp = op_res;
 			   }
@@ -1927,26 +1932,26 @@ yyreduce:
 		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 
 	}
-#line 1931 "y.tab.c" /* yacc.c:1652  */
+#line 1936 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 37:
-#line 372 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 377 "grammar/c_syn.y" /* yacc.c:1652  */
     {for_depth_counter_var++;}
-#line 1937 "y.tab.c" /* yacc.c:1652  */
+#line 1942 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 38:
-#line 377 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 382 "grammar/c_syn.y" /* yacc.c:1652  */
     {
  		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
  		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
  	}
-#line 1946 "y.tab.c" /* yacc.c:1652  */
+#line 1951 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 39:
-#line 381 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 386 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -1957,20 +1962,20 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_EXPR_LIST,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 1961 "y.tab.c" /* yacc.c:1652  */
+#line 1966 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 40:
-#line 393 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 398 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 1970 "y.tab.c" /* yacc.c:1652  */
+#line 1975 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 41:
-#line 397 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 402 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-3].vv).string_exp);
 		int len2 = strlen((yyvsp[-1].vv).string_exp);
@@ -1981,11 +1986,11 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_ARR_ACCESS,(yyvsp[-3].vv)._ast,(yyvsp[-1].vv)._ast);
 	}
-#line 1985 "y.tab.c" /* yacc.c:1652  */
+#line 1990 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 42:
-#line 407 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 412 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len1+3);
@@ -1994,11 +1999,11 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_FUNC_CALL,(yyvsp[-2].vv)._ast,0);
 	}
-#line 1998 "y.tab.c" /* yacc.c:1652  */
+#line 2003 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 43:
-#line 415 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 420 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-1].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len1+3);
@@ -2007,11 +2012,11 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_INC,(yyvsp[-1].vv)._ast,0);
 	}
-#line 2011 "y.tab.c" /* yacc.c:1652  */
+#line 2016 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 44:
-#line 423 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 428 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-1].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len1+3);
@@ -2020,20 +2025,20 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_DEC,(yyvsp[-1].vv)._ast,0);
 	}
-#line 2024 "y.tab.c" /* yacc.c:1652  */
+#line 2029 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 45:
-#line 433 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 438 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2033 "y.tab.c" /* yacc.c:1652  */
+#line 2038 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 46:
-#line 437 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 442 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len2 = strlen((yyvsp[0].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len2+3);
@@ -2042,11 +2047,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_INC,0,(yyvsp[0].vv)._ast);
 
 	}
-#line 2046 "y.tab.c" /* yacc.c:1652  */
+#line 2051 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 47:
-#line 445 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 450 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len2 = strlen((yyvsp[0].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len2+3);
@@ -2054,20 +2059,20 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_DEC,0,(yyvsp[0].vv)._ast);
 	}
-#line 2058 "y.tab.c" /* yacc.c:1652  */
+#line 2063 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 48:
-#line 454 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 459 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2067 "y.tab.c" /* yacc.c:1652  */
+#line 2072 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 49:
-#line 458 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 463 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 
@@ -2081,11 +2086,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_MUL,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2085 "y.tab.c" /* yacc.c:1652  */
+#line 2090 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 50:
-#line 471 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 476 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -2097,11 +2102,11 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_DIV,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2101 "y.tab.c" /* yacc.c:1652  */
+#line 2106 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 51:
-#line 482 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 487 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -2115,21 +2120,21 @@ yyreduce:
 
 
 	}
-#line 2119 "y.tab.c" /* yacc.c:1652  */
+#line 2124 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 52:
-#line 497 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 502 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2129 "y.tab.c" /* yacc.c:1652  */
+#line 2134 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 53:
-#line 502 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 507 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -2142,11 +2147,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_ADD,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2146 "y.tab.c" /* yacc.c:1652  */
+#line 2151 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 54:
-#line 514 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 519 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -2159,22 +2164,22 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_SUB,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2163 "y.tab.c" /* yacc.c:1652  */
+#line 2168 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 55:
-#line 528 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 533 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2174 "y.tab.c" /* yacc.c:1652  */
+#line 2179 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 56:
-#line 534 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 539 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2186,11 +2191,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_LEFT_OP,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2190 "y.tab.c" /* yacc.c:1652  */
+#line 2195 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 57:
-#line 545 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 550 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2202,22 +2207,22 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_RIGHT_OP,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2206 "y.tab.c" /* yacc.c:1652  */
+#line 2211 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 58:
-#line 558 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 563 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2217 "y.tab.c" /* yacc.c:1652  */
+#line 2222 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 59:
-#line 564 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 569 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2227,11 +2232,11 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_LOWER,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2231 "y.tab.c" /* yacc.c:1652  */
+#line 2236 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 60:
-#line 573 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 578 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2241,11 +2246,11 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_GREATER,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2245 "y.tab.c" /* yacc.c:1652  */
+#line 2250 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 61:
-#line 582 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 587 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2256,11 +2261,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_LOWER_EQUAL,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2260 "y.tab.c" /* yacc.c:1652  */
+#line 2265 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 62:
-#line 592 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 597 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2270,22 +2275,22 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_GREATER_EQUAL,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2274 "y.tab.c" /* yacc.c:1652  */
+#line 2279 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 63:
-#line 603 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 608 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2285 "y.tab.c" /* yacc.c:1652  */
+#line 2290 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 64:
-#line 609 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 614 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2297,11 +2302,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_EQUAL,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2301 "y.tab.c" /* yacc.c:1652  */
+#line 2306 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 65:
-#line 620 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 625 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2311,21 +2316,21 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_NOT_EQUAL,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2315 "y.tab.c" /* yacc.c:1652  */
+#line 2320 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 66:
-#line 631 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 636 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2325 "y.tab.c" /* yacc.c:1652  */
+#line 2330 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 67:
-#line 636 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 641 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2336,22 +2341,22 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_AND,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2340 "y.tab.c" /* yacc.c:1652  */
+#line 2345 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 68:
-#line 648 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 653 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2351 "y.tab.c" /* yacc.c:1652  */
+#line 2356 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 69:
-#line 654 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 659 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2361,22 +2366,22 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_EOR,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2365 "y.tab.c" /* yacc.c:1652  */
+#line 2370 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 70:
-#line 665 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 670 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2376 "y.tab.c" /* yacc.c:1652  */
+#line 2381 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 71:
-#line 671 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 676 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2386,22 +2391,22 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_IOR,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2390 "y.tab.c" /* yacc.c:1652  */
+#line 2395 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 72:
-#line 682 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 687 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2401 "y.tab.c" /* yacc.c:1652  */
+#line 2406 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 73:
-#line 688 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 693 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2412,22 +2417,22 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_AND_OP,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2416 "y.tab.c" /* yacc.c:1652  */
+#line 2421 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 74:
-#line 700 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 705 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2427 "y.tab.c" /* yacc.c:1652  */
+#line 2432 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 75:
-#line 706 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 711 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2437,21 +2442,21 @@ yyreduce:
 		free((yyvsp[0].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_OR_OP,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2441 "y.tab.c" /* yacc.c:1652  */
+#line 2446 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 76:
-#line 719 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 724 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2451 "y.tab.c" /* yacc.c:1652  */
+#line 2456 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 77:
-#line 724 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 729 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2463,29 +2468,29 @@ yyreduce:
 
 		(yyval.vv)._ast = ast_new_operation(AST_ASSIGN,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 	}
-#line 2467 "y.tab.c" /* yacc.c:1652  */
+#line 2472 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 78:
-#line 737 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 742 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = malloc(2);
 		snprintf((yyval.vv).string_exp,2, "=");
 	}
-#line 2476 "y.tab.c" /* yacc.c:1652  */
+#line 2481 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 79:
-#line 745 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 750 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2485 "y.tab.c" /* yacc.c:1652  */
+#line 2490 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 80:
-#line 749 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 754 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-1].vv).string_exp);
@@ -2499,11 +2504,11 @@ yyreduce:
 
 
 	}
-#line 2503 "y.tab.c" /* yacc.c:1652  */
+#line 2508 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 81:
-#line 766 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 771 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		//restore the current type variable to -1
 		 current_type_var = -1;
@@ -2521,11 +2526,11 @@ yyreduce:
 		ast_print((yyval.vv)._ast,0);
 
 	}
-#line 2525 "y.tab.c" /* yacc.c:1652  */
+#line 2530 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 82:
-#line 788 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 793 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		 //$$.type = $1.type; INT or FLAT ...
 		 //store the current type in a global variable....TODO
@@ -2534,11 +2539,11 @@ yyreduce:
 
 		 (yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 	}
-#line 2538 "y.tab.c" /* yacc.c:1652  */
+#line 2543 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 83:
-#line 800 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 805 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = VOID;
 
@@ -2546,32 +2551,32 @@ yyreduce:
 		snprintf((yyval.vv).string_exp,5, "void");
 
 	}
-#line 2550 "y.tab.c" /* yacc.c:1652  */
+#line 2555 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 84:
-#line 807 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 812 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = INT;
 
 		(yyval.vv).string_exp = malloc(4);
 		snprintf((yyval.vv).string_exp,4, "int");
 	}
-#line 2561 "y.tab.c" /* yacc.c:1652  */
+#line 2566 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 85:
-#line 813 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 818 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = FLOAT;
 		(yyval.vv).string_exp = malloc(6);
 		snprintf((yyval.vv).string_exp,6, "float");
 	}
-#line 2571 "y.tab.c" /* yacc.c:1652  */
+#line 2576 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 86:
-#line 822 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 827 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		symbol_p varp = (symbol_p) (yyvsp[0].vv).sentry;
 		int countp = (yyvsp[0].vv).count_p; //TODO maybe 0
@@ -2588,11 +2593,11 @@ yyreduce:
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 
 	}
-#line 2592 "y.tab.c" /* yacc.c:1652  */
+#line 2597 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 87:
-#line 838 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 843 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 
@@ -2605,11 +2610,11 @@ yyreduce:
 	free((yyvsp[0].vv).string_exp);
 
 	}
-#line 2609 "y.tab.c" /* yacc.c:1652  */
+#line 2614 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 88:
-#line 854 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 859 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		for(int l = 0;l<4;l++)
 			(yyval.vv).t[l] = (yyvsp[0].vv).t[l];
@@ -2623,11 +2628,11 @@ yyreduce:
 
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2627 "y.tab.c" /* yacc.c:1652  */
+#line 2632 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 89:
-#line 867 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 872 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		for(int l = 0;l<4;l++){
 			(yyval.vv).t[l] = (yyvsp[-2].vv).t[l];
@@ -2665,11 +2670,11 @@ yyreduce:
 
 
 	}
-#line 2669 "y.tab.c" /* yacc.c:1652  */
+#line 2674 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 90:
-#line 909 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 914 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		for(int l = 0;l<4;l++)
 			(yyval.vv).t[l] = (yyvsp[0].vv).t[l];
@@ -2691,11 +2696,11 @@ yyreduce:
 
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2695 "y.tab.c" /* yacc.c:1652  */
+#line 2700 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 91:
-#line 930 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 935 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		for(int l = 0;l<4;l++)
@@ -2709,11 +2714,11 @@ yyreduce:
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 
 	}
-#line 2713 "y.tab.c" /* yacc.c:1652  */
+#line 2718 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 92:
-#line 947 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 952 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).count_p  = 0;
 		(yyval.vv).count_m  = 0;
@@ -2749,11 +2754,11 @@ yyreduce:
 
 
 	}
-#line 2753 "y.tab.c" /* yacc.c:1652  */
+#line 2758 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 93:
-#line 982 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 987 "grammar/c_syn.y" /* yacc.c:1652  */
     {
          	//$$ = $1 +1;
         	(yyval.vv).t[direct_declarator_var] = (yyvsp[-1].vv).val;
@@ -2775,11 +2780,11 @@ yyreduce:
 		current_type_var = -1;
 
         }
-#line 2779 "y.tab.c" /* yacc.c:1652  */
+#line 2784 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 94:
-#line 1003 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1008 "grammar/c_syn.y" /* yacc.c:1652  */
     {
         		current_type_var = -1;
 			printf("TEST940\n");
@@ -2792,11 +2797,11 @@ yyreduce:
 			symbol_p tmp = (yyval.vv).sentry;
 			tmp->type = TYPE_FUNCTION;
         }
-#line 2796 "y.tab.c" /* yacc.c:1652  */
+#line 2801 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 95:
-#line 1016 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1021 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 			current_type_var = -1;
         		printf("TEST941\n");
@@ -2811,11 +2816,11 @@ yyreduce:
 			tmp->type = TYPE_FUNCTION;
 
         }
-#line 2815 "y.tab.c" /* yacc.c:1652  */
+#line 2820 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 96:
-#line 1030 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1035 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		current_type_var = -1;
 		(yyval.vv).sentry = (yyvsp[-3].vv).sentry;
@@ -2829,19 +2834,19 @@ yyreduce:
 		tmp->type = TYPE_FUNCTION;
 		//arg number
 	}
-#line 2833 "y.tab.c" /* yacc.c:1652  */
+#line 2838 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 97:
-#line 1047 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1052 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 	}
-#line 2841 "y.tab.c" /* yacc.c:1652  */
+#line 2846 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 98:
-#line 1050 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1055 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2850,11 +2855,11 @@ yyreduce:
 		free((yyvsp[-2].vv).string_exp);
 		free((yyvsp[0].vv).string_exp);
 	}
-#line 2854 "y.tab.c" /* yacc.c:1652  */
+#line 2859 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 99:
-#line 1061 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1066 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-1].vv).string_exp);
 		int len2 = strlen((yyvsp[0].vv).string_exp);
@@ -2863,11 +2868,11 @@ yyreduce:
 		free((yyvsp[-1].vv).string_exp);
 		free((yyvsp[0].vv).string_exp);
 	}
-#line 2867 "y.tab.c" /* yacc.c:1652  */
+#line 2872 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 100:
-#line 1073 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1078 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).count_p = 1;
 
@@ -2878,11 +2883,11 @@ yyreduce:
 
 
 	}
-#line 2882 "y.tab.c" /* yacc.c:1652  */
+#line 2887 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 101:
-#line 1084 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1089 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 	 	(yyval.vv).count_p = (yyvsp[0].vv).count_p +1;
 
@@ -2893,11 +2898,11 @@ yyreduce:
 
 
 	}
-#line 2897 "y.tab.c" /* yacc.c:1652  */
+#line 2902 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 102:
-#line 1098 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1103 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 	 	(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 
@@ -2905,11 +2910,11 @@ yyreduce:
 	 	(yyval.vv).type = 1;//simple
 
 	}
-#line 2909 "y.tab.c" /* yacc.c:1652  */
+#line 2914 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 103:
-#line 1105 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1110 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		int len1 = strlen((yyvsp[-1].vv).string_exp);
 		(yyval.vv).string_exp = malloc(len1+3);
@@ -2919,20 +2924,20 @@ yyreduce:
 
 		(yyval.vv)._ast = (yyvsp[-1].vv)._ast;
 	}
-#line 2923 "y.tab.c" /* yacc.c:1652  */
+#line 2928 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 104:
-#line 1116 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1121 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).string_exp = (yyvsp[0].vv).string_exp;
 		(yyval.vv)._ast = (yyvsp[0].vv)._ast;
 	}
-#line 2932 "y.tab.c" /* yacc.c:1652  */
+#line 2937 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 105:
-#line 1120 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1125 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		int len1 = strlen((yyvsp[-2].vv).string_exp);
@@ -2945,11 +2950,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_operation(AST_INIT_LIST,(yyvsp[-2].vv)._ast,(yyvsp[0].vv)._ast);
 
 	}
-#line 2949 "y.tab.c" /* yacc.c:1652  */
+#line 2954 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 106:
-#line 1136 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1141 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = IDENTIFIER;
 		char * curr_var_name_tmp = (yyvsp[0].vv).string_val;
@@ -2973,11 +2978,11 @@ yyreduce:
 
 
 	}
-#line 2977 "y.tab.c" /* yacc.c:1652  */
+#line 2982 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 107:
-#line 1159 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1164 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = CONST_INT;
 
@@ -2993,11 +2998,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_number(a);
 
 	}
-#line 2997 "y.tab.c" /* yacc.c:1652  */
+#line 3002 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 108:
-#line 1174 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1179 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		if(current_type_var == INT || current_type_var == STRING){
 			printf("incompatible type");
@@ -3014,11 +3019,11 @@ yyreduce:
 		(yyval.vv)._ast = ast_new_float(a);
 
 	}
-#line 3018 "y.tab.c" /* yacc.c:1652  */
+#line 3023 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 109:
-#line 1190 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1195 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		(yyval.vv).type = (yyvsp[-1].vv).type;
@@ -3031,11 +3036,11 @@ yyreduce:
 		(yyval.vv)._ast = (yyvsp[-1].vv)._ast;
 
 	}
-#line 3035 "y.tab.c" /* yacc.c:1652  */
+#line 3040 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 110:
-#line 1202 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1207 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		(yyval.vv).type = STRING;
 		char * curr_var_name_tmp = (yyvsp[0].vv).string_val;
@@ -3044,11 +3049,11 @@ yyreduce:
 		snprintf((yyval.vv).string_exp,len+1, "%s",curr_var_name_tmp);
 		(yyval.vv)._ast = ast_new_float(-2);
 	}
-#line 3048 "y.tab.c" /* yacc.c:1652  */
+#line 3053 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 111:
-#line 1215 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1220 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 		char * curr_var_name_tmp = (yyvsp[0].vv).string_val;
 		int len = strlen(curr_var_name_tmp);
@@ -3059,11 +3064,11 @@ yyreduce:
 
 
 	}
-#line 3063 "y.tab.c" /* yacc.c:1652  */
+#line 3068 "y.tab.c" /* yacc.c:1652  */
     break;
 
   case 112:
-#line 1225 "grammar/c_syn.y" /* yacc.c:1652  */
+#line 1230 "grammar/c_syn.y" /* yacc.c:1652  */
     {
 
 		char * curr_var_name_tmp = (yyvsp[0].vv).string_exp;
@@ -3074,11 +3079,11 @@ yyreduce:
 		free((yyvsp[-2].vv).string_exp);
 		(yyval.vv)._ast = ast_new_operation(AST_LIST,(yyvsp[-2].vv)._ast,ast_new_id(curr_var_name_tmp)) ;
 	}
-#line 3078 "y.tab.c" /* yacc.c:1652  */
+#line 3083 "y.tab.c" /* yacc.c:1652  */
     break;
 
 
-#line 3082 "y.tab.c" /* yacc.c:1652  */
+#line 3087 "y.tab.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3309,7 +3314,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1236 "grammar/c_syn.y" /* yacc.c:1918  */
+#line 1241 "grammar/c_syn.y" /* yacc.c:1918  */
 
 
 int yyerror(const char *str)

@@ -357,7 +357,12 @@ iteration_statement :
 			        fptr = fopen(OPTIMIZER_FILE,"r");
 			   	char* op_res = malloc(lenm);
 			   	memset(op_res,0,lenm);
-			   	fgets(op_res,lenm,fptr);
+			   	char *r = fgets(op_res,lenm,fptr);
+				
+				if (r != NULL) {
+					perror("fgets error 363\n");
+				}
+
 			   	free($$.string_exp);
 			   	$$.string_exp = op_res;
 			   }

@@ -8,7 +8,7 @@ extern char* file_out;
 extern int display_ast;
 
 int main(int argc, char**argv) {
-     char* file_in;
+     char* file_in = NULL;
      file_out = NULL;
      int arglen;
      int show = 0;

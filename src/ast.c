@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "headers/ast.h"
+extern int display_ast;
 
 ast* ast_new_operation(ast_type type, ast* left, ast* right) {
     ast* new = malloc(sizeof(ast));
@@ -79,6 +80,7 @@ void ast_free(ast* ast) {
         case AST_INIT_LIST:
         case AST_EXPR_LIST:
         case AST_ASSIGN:
+        case AST_WHILE:
         case AST_STATE_LIST:
             ast_free(ast->left);
             ast_free(ast->right);
@@ -106,6 +108,9 @@ void ast_free(ast* ast) {
 }
 
 void ast_print(ast* ast, int indent) {
+    if (!display_ast) 
+        return;
+
     for (int i = 0; i < indent; i++)
         printf("    ");
     switch(ast->type) {
