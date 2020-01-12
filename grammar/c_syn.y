@@ -8,6 +8,7 @@
 	int for_depth_counter_var = 0;
 	int direct_declarator_var = 0;
 	int current_type_var = -1;
+	int can_use_un = 0;
 %}
 %union{
 	struct {
@@ -367,7 +368,6 @@ expression:
  	assignment_expression {
  		$$.string_exp = $1.string_exp;
  		$$._ast = $1._ast;
- 		//printf("\n---------TEST145--- |%s|\n",$$.string_exp );
  	}
 	| expression ',' assignment_expression {
 
@@ -959,6 +959,8 @@ direct_declarator
 		    tttt->is_dec = 1;
 		}
 
+		printf("---------------962----------identifier : %s\n",curr_var_name_tmp);
+
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
@@ -986,7 +988,7 @@ direct_declarator
 		free($1.string_exp);
 
 		$$._ast = ast_new_operation(AST_ARR_ACCESS,$1._ast,ast_new_number($3.val));
-
+		current_type_var = -1;
 
         }
         | direct_declarator '(' ')' {
@@ -1003,6 +1005,7 @@ direct_declarator
         }
 
         | direct_declarator '(' identifier_list ')' {
+			current_type_var = -1;
         		printf("TEST941\n");
         		int len1 = strlen($1.string_exp);
 			int len2 = strlen($3.string_exp);
@@ -1011,12 +1014,12 @@ direct_declarator
 			free($1.string_exp);
 			free($3.string_exp);
 			$$.sentry = $1.sentry;
-		symbol_p tmp = $$.sentry;
+			symbol_p tmp = $$.sentry;
 			tmp->type = TYPE_FUNCTION;
 
         }
 	| direct_declarator '(' parameter_list ')' {
-
+		current_type_var = -1;
 		$$.sentry = $1.sentry;
 		int len1 = strlen($1.string_exp);
 		int len2 = strlen($3.string_exp);
@@ -1123,9 +1126,6 @@ initializer_list
 primary_expression
 	: IDENTIFIER {
 		$$.type = IDENTIFIER;
-		//check if identifier is already declared
-		// if we are current_type_var == -1 and trying to reference a IDENTIFIER that doesn't exist == ERROR
-		// TODO if current_type_var != -1 then have to check in other side of equality if exist ID = VAR_CURR (check if exist above )
 		char * curr_var_name_tmp = $1.string_val;
 		if(current_type_var == -1){
 		    symbol_p tttt;
@@ -1134,8 +1134,10 @@ primary_expression
 			printf("error : Undeclared variable %s\tat line : %d\n",curr_var_name_tmp,line_counter+1);
 			return -1;
 		    }
+
 		}
 
+		printf("------------1138--------Variable %s \n",curr_var_name_tmp);
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+1);
 		snprintf($$.string_exp,len+1, "%s",curr_var_name_tmp);
@@ -1161,6 +1163,10 @@ primary_expression
 
 	}
 	| CONST_FLOAT {
+		if(current_type_var == INT || current_type_var == STRING){
+			printf("incompatible type");
+			return -1;
+		}
 		$$.type = CONST_FLOAT;
 		char * curr_var_name_tmp = $1.string_val;
 		int len = strlen(curr_var_name_tmp);
@@ -1174,7 +1180,7 @@ primary_expression
 	}
 	| '(' expression ')' {
 
-		$$.type = EXPR;
+		$$.type = $2.type;
 		char * curr_var_name_tmp = $2.string_exp;
 		int len = strlen(curr_var_name_tmp);
 		$$.string_exp = malloc(len+3);
@@ -1203,6 +1209,8 @@ identifier_list
 		$$.string_exp = malloc(len);
 		memcpy($$.string_exp,curr_var_name_tmp,len);
 		$$._ast = ast_new_id(curr_var_name_tmp);
+		printf("-----1210---------------Variable %s \n",curr_var_name_tmp);
+
 
 	}
 	| identifier_list ',' IDENTIFIER {

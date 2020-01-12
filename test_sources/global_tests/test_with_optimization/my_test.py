@@ -16,3 +16,4 @@ for i in range(from_,to_+1):
         print("test {} passed".format(i))
     else :
         print("test {} failed".format(i))
+    proc3 = sp.run(["rm","/home/slahmer/cblass/cblas/CBLAS/examples/test_.c"])

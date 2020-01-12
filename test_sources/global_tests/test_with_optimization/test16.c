@@ -6,7 +6,7 @@ int main()
     float ww[20];
     float z[4] = {1.0,2.0,3.0,4.0};
     int i;
-    int a = 2,b=20,c=33;
+    int a = 2,b=20,c=33;ssd
     for(i=0;i<=3;i++)
     {
         t[i] = 10*a+c/(b*c);
