@@ -188,7 +188,7 @@ compound_statement
 		free($2.string_exp);
 		//ast_print($2._ast,0);
 
-	  	 //$$._ast = $2._ast;
+	  	 $$._ast = $2._ast;
 
 
 	}
@@ -282,6 +282,7 @@ expression_statement
 		snprintf($$.string_exp,len+2,"%s\n",$1.string_val);
 		free($1.string_val);
 
+		$$._ast = ast_new_print();
 	}
 	;
 
@@ -318,8 +319,10 @@ iteration_statement :
 	 }
 
 	| iter_counter FOR '(' expression_statement expression_statement expression')' compound_statement {
-		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 
+		ast* fora = ast_new_for($4._ast,$5._ast,$6._ast,$8._ast);
+		ast_print(fora,0);
+		printf("\n[+] S->for_depth_counter_var : %d\n",for_depth_counter_var);
 		int len1 = strlen($4.string_exp);
 		int len2 = strlen($5.string_exp);
 		int len3 = strlen($6.string_exp);

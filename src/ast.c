@@ -20,6 +20,23 @@ ast* ast_new_number(int number) {
     new->i_number = number;
     return new;
 }
+ast* ast_new_for(struct ast* ass,struct ast* cond,struct ast* inc,struct ast* core){
+    ast* new = malloc(sizeof(ast));
+    new->type = AST_FOR;
+    new->inc = inc;
+    new->assign = ass;
+    new->core = core;
+    new->cond = cond;
+    return new;
+}
+
+ast* ast_new_print(){
+    ast* new = malloc(sizeof(ast));
+    new->type = AST_PRINTF;
+    return new;
+}
+
+
 ast* ast_new_float(float number) {
     ast* new = malloc(sizeof(ast));
     new->type = AST_FLOAT;
@@ -80,6 +97,10 @@ void ast_free(ast* ast) {
         case AST_DEC_LIST:
             break;
 
+        case AST_FOR:
+            break;
+        case AST_PRINTF:
+            break;
     }
     free(ast);
 }
@@ -230,6 +251,16 @@ void ast_print(ast* ast, int indent) {
         case AST_DEC_LIST:
             printf("DEC\n");
             ast_print(ast->right, indent + 1);
+            break;
+        case AST_FOR:
+            printf("FOR\n");
+            ast_print(ast->assign, indent + 1);
+            ast_print(ast->cond, indent + 1);
+            ast_print(ast->inc, indent + 1);
+            ast_print(ast->core, indent + 1);
+            break;
+        case AST_PRINTF:
+            printf("PRINTF()\n");
             break;
     };
 }
