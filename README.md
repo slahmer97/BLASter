@@ -58,7 +58,8 @@ Project directory :
  ./blaster -i ../test_sources/global_tests/test_with_optimization/test1.c -o result.c -a -t
  - at this point blast will require you to start optimizer executable in order to get responses for its questions.
  ./optimizer 
-  Input code :
+ 
+Input code :
   
  ```c
 #include "stdio.h"
@@ -128,7 +129,7 @@ int main()
 }
 ```
 
-output code : 
+Output code : 
 ```c
 #include "cblas.h"
 #include "primitives.h"
@@ -176,7 +177,7 @@ int main()
 }
 ```
 
-output : 
+Output : 
 ```c
 #include "cblas.h"
 #include "primitives.h"
